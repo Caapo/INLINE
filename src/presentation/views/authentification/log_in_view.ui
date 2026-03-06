@@ -6,21 +6,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>475</width>
-    <height>339</height>
+    <width>603</width>
+    <height>366</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <widget class="QLabel" name="welcomeLabel">
-     <property name="text">
-      <string>Bienvenue dans INLINE</string>
-     </property>
-    </widget>
-   </item>
    <item>
     <widget class="QLineEdit" name="emailInput">
      <property name="placeholderText">
@@ -29,24 +22,21 @@
     </widget>
    </item>
    <item>
-    <widget class="QLineEdit" name="usernameInput">
+    <widget class="QPushButton" name="logInButton">
      <property name="text">
-      <string/>
-     </property>
-     <property name="placeholderText">
-      <string>nom d'utilisateur (ex: alex)</string>
+      <string>Se connecter</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QPushButton" name="createAccountButton">
+    <widget class="QPushButton" name="backButton">
      <property name="text">
-      <string>Créer un compte</string>
+      <string>Retourner à l'écran d'authentification</string>
      </property>
     </widget>
    </item>
    <item>
-    <widget class="QLabel" name="connexionStatusLabel">
+    <widget class="QLabel" name="logInStatusLabel">
      <property name="enabled">
       <bool>false</bool>
      </property>

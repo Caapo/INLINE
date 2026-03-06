@@ -18,3 +18,10 @@ class UserService:
         user = User(email=email, username=username)
         self.__user_repository.save_user(user)
         return user
+
+    #Permet de connecter un utilisateur à partir de son email
+    def connect_user(self, email:str) -> User:
+        user = self.__user_repository.find_user_by_email(email)
+        if not user:
+            raise ValueError("Aucun compte trouvé avec cet email. Créez un nouveau compte.")
+        return user
