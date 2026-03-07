@@ -1,6 +1,12 @@
 # === Général ===
 from PySide6.QtWidgets import QApplication
 import sys
+from pathlib import Path
+
+#Dossier racine du projet
+root = Path(__file__).resolve().parents[1]
+sys.path.append(str(root))
+
 
 # === Repositories ===
 from infrastructure.repositories.sqlite.sqlite_user_repository import SQLiteUserRepository
@@ -12,10 +18,8 @@ from application.services.user_service import UserService
 # === Views ===
 from presentation.views.authentification.authentification_view import AuthentificationView
 # from presentation.views.authentification.authentification_view import AuthentificationView
+import assets.resources_rc
 
-
-# === Others ===
-from pathlib import Path
 
 
 # ================ MAIN =================
