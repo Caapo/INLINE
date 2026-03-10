@@ -1,0 +1,55 @@
+from datetime import datetime
+
+
+class Event:
+
+    def __init__(self, id: str, intention_id: str, start_time: datetime, duration: int, status: str = "planned", created_at: datetime | None = None,
+                metadata: dict | None = None
+    ):
+
+        self._id = id
+        self._intention_id = intention_id
+        self._start_time = start_time
+        self._duration = duration
+        self._status = status
+        self._created_at = created_at or datetime.utcnow()
+        self._metadata = metadata or {}
+
+    #-----------------------
+
+    def update_time(self, start_time: datetime, duration: int):
+
+        self._start_time = start_time
+        self._duration = duration
+
+    # ----------------------
+
+    def complete(self):
+
+        if self._status == "cancelled":
+            raise ValueError("Les évènements annulés ne peuvent pas être complétés")
+
+        self._status = "completed"
+
+    # ----------------------
+
+    def cancel(self):
+
+        if self._status == "completed":
+            raise ValueError("Les évènements complétés ne peuvent pas être annulés")
+
+        self._status = "cancelled"
+
+    # ----------------------
+
+    def get_info(self):
+
+        return {
+            "id": self._id,
+            "intention_id": self._intention_id,
+            "start_time": self._start_time,
+            "duration": self._duration,
+            "status": self._status,
+            "created_at": self._created_at,
+            "metadata": self._metadata
+        }
