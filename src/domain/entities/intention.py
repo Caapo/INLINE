@@ -1,11 +1,20 @@
+# ============ Imports ============
 from datetime import datetime
 from typing import Optional
 
 
+# ============ Notes ============  
+# Cette classe permet de représenter une intention, en stockant des informations 
+# telles que le titre, la catégorie, le statut (active, inactive).
+
+
+
+# ============ Class ============   
+
 class Intention:
 
-    def __init__(self, id: str, user_id: str, title: str, category: str, object_id: Optional[str] = None,
-                is_active: bool = False, created_at: Optional[datetime] = None, metadata: Optional[dict] = None
+    def __init__(self, id:str, user_id:str, title:str, category:str, object_id:Optional[str] = None,
+                is_active:bool = False, metadata:Optional[dict] = None
     ):
         
         self._id = id
@@ -14,7 +23,7 @@ class Intention:
         self._category = category
         self._object_id = object_id
         self._is_active = is_active
-        self._created_at = created_at or datetime.utcnow()
+        self._created_at = datetime.utcnow()
         self._metadata = metadata or {}
 
     #--------------------------------------------

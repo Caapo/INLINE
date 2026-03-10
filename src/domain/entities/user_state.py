@@ -1,10 +1,19 @@
+# ============ Imports ============
 from datetime import datetime
 
 
+# ============ Notes ============  
+# Cette classe permet de représenter l'état actuel d'un utilisateur dans l'application, en stockant des informations 
+# telles que l'environnement actuel, les intentions actives, l'événement en cours, le module ouvert...
+
+
+
+# ============ Class ============  
+
 class UserState:
 
-    def __init__(self, user_id: str, current_environment_id: str | None = None, active_intention_id: str | None = None, current_event_id: str | None = None,
-        opened_module_id: str | None = None, metadata: dict | None = None
+    def __init__(self, user_id:str, current_environment_id:Optional[str] = None, active_intention_id:Optional[str] = None, current_event_id:Optional[str] = None,
+        opened_module_id:Optional[str] = None, metadata:Optional[dict] = None
     ):
 
         self._user_id = user_id
@@ -17,13 +26,13 @@ class UserState:
 
     # ----------------------
 
-    def set_current_environment(self, environment_id: str):
+    def set_current_environment(self, environment_id:str):
 
         self._current_environment_id = environment_id
 
     # ----------------------
 
-    def activate_intention(self, intention_id: str):
+    def activate_intention(self, intention_id:str):
 
         self._active_intention_id = intention_id
 

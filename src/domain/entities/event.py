@@ -1,23 +1,30 @@
+# ============ Imports ============
 from datetime import datetime
 
 
+# ============ Notes ============  
+# Cette classe permet de représenter un événement lié à une intention, en stockant des informations 
+# telles que l'heure de début, la durée, le statut (planifié, complété, annulé).
+
+
+
+# ============ Class ============   
+
 class Event:
 
-    def __init__(self, id: str, intention_id: str, start_time: datetime, duration: int, status: str = "planned", created_at: datetime | None = None,
-                metadata: dict | None = None
-    ):
+    def __init__(self, id:str, intention_id:str, start_time:datetime, duration:int, status:str = "planned", metadata:Optional[dict] = None):
 
         self._id = id
         self._intention_id = intention_id
         self._start_time = start_time
         self._duration = duration
         self._status = status
-        self._created_at = created_at or datetime.utcnow()
+        self._created_at = datetime.utcnow()
         self._metadata = metadata or {}
 
     #-----------------------
 
-    def update_time(self, start_time: datetime, duration: int):
+    def update_time(self, start_time:datetime, duration:int):
 
         self._start_time = start_time
         self._duration = duration
