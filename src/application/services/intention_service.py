@@ -1,9 +1,7 @@
 # ============ Imports ============ 
-from datetime import datetime
-from uuid import uuid4
-
 from domain.entities.intention import Intention
 from domain.repositories.i_intention_repository import IIntentionRepository
+from factories.intention_factory import IntentionFactory
 
 
 # ============ Notes ============  
@@ -11,66 +9,46 @@ from domain.repositories.i_intention_repository import IIntentionRepository
 # Elle interagit avec la base de données (SQLiteIntentionRepository)  pour stocker et récupérer les données des intentions.
 
 
-
-# ============ Class ============  
-
 class IntentionService:
-    def __init__(self, intention_repository:IIntentionRepository):
-
+    def __init__(self, intention_repository:IIntentionRepository, intention_factory:IntentionFactory):
         self._intention_repository = intention_repository
+        self._intention_factory = intention_factory
 
     #----------------------
 
     def create_intention(self, user_id:str, title:str, category:str) -> Intention:
-
-        intention = Intention(
-            intention_id = str(uuid4())
-            user_id = user_id,
-            title = title,
-            category = category
-            created_at = datetime.utcnow()
-        )
-
+        intention = self._intention_factory.create_intention(user_id=user_id, title=title, category=category)
         self._intention_repository.save(intention)
-
         return intention
 
     #----------------------
 
-    def rename_intention(self, intention_id:str, new_title:str):
-
+    def _get_intention_or_raise(self, intention_id:str) -> Intention:
         intention = self._intention_repository.get_by_id(intention_id)
-
         if not intention:
             raise ValueError("Intention non trouvée.")
+        return intention
 
+    #----------------------
+
+    def rename_intention(self, intention_id:str, new_title:str) -> Intention:
+        intention = self._get_intention_or_raise(intention_id)
         intention.rename(new_title)
         self._intention_repository.save(intention)
-
         return intention
 
     #----------------------
 
-    def activate_intention(self, intention_id:str):
-        intention = self._intention_repository.get_by_id(intentention_id)
-
-        if not intention: 
-            raise ValueError("Intention non trouvée.")
-        
+    def activate_intention(self, intention_id:str) -> Intention:
+        intention = self._get_intention_or_raise(intention_id)
         intention.activate()
-
         self._intention_repository.save(intention)
         return intention
         
     #----------------------
 
-    def deactivate_intention(self, intention_id:str):
-        intention = self._intention_repository.get_by_id(intentention_id)
-
-        if not intention: 
-            raise ValueError("Intention non trouvée.")
-        
+    def deactivate_intention(self, intention_id:str) -> Intention:
+        intention = self._get_intention_or_raise(intention_id)
         intention.deactivate()
-
         self._intention_repository.save(intention)
         return intention

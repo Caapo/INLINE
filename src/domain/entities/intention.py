@@ -6,10 +6,7 @@ from typing import Optional
 # ============ Notes ============  
 # Cette classe permet de représenter une intention, en stockant des informations 
 # telles que le titre, la catégorie, le statut (active, inactive).
-
-
-
-# ============ Class ============   
+   
 
 class Intention:
 

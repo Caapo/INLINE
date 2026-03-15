@@ -13,6 +13,7 @@ class SQLiteUserRepository(IUserRepository):
     #Permet d'initialiser la connexion a la BDD
     def __init__(self, db_path:str):
         self.__connection = sqlite3.connect(db_path)
+        self.__connection.row_factory = sqlite3.Row
         self.__create_table()
 
     # ---------------------------------------------------
@@ -47,20 +48,21 @@ class SQLiteUserRepository(IUserRepository):
 
     # ---------------------------------------------------
 
+    def _row_to_user(self, row) -> User:
+        return User.from_persistence(
+            id=row["id"],
+            email=row["email"],
+            username=row["username"],
+            created_at=datetime.fromisoformat(row["created_at"]),
+            metadata=json.loads(row["metadata"]) if row["metadata"] else {}
+        )
+
+    # ---------------------------------------------------
+
     #Permet de récupérer un user depuis la BDD à partir de son email (sert à la connexion)
     def find_user_by_email(self, email: str) -> Optional[User]:
         cursor = self.__connection.cursor()
-        cursor.execute(
-            "SELECT id, email, username, created_at FROM users WHERE email = ?",
-            (email,)
-        )
+        cursor.execute("SELECT id, email, username, created_at, metadata FROM users WHERE email = ?", (email,))
         row = cursor.fetchone()
 
-        if row:
-            user_id, email, username, created_at = row
-            created_at_dt = datetime.fromisoformat(created_at)
-
-            #arguments nommés simplement pour la lisibilité du code
-            return User.from_persistence(user_id=user_id, email=email, username=username, created_at=created_at_dt)
-
-        return None
+        return self._row_to_user(row) if row else None

@@ -4,6 +4,7 @@ from uuid import uuid4
 
 from domain.entities.event import Event
 from domain.repositories.i_event_repository import IEventRepository
+from factories.intention_factory import EventFactory
 
 
 # ============ Notes ============  
@@ -14,55 +15,45 @@ from domain.repositories.i_event_repository import IEventRepository
 # ============ Class ============  
 class EventService():
 
-    def __init__(self, event_repository:IEventRepository):
+    def __init__(self, event_repository:IEventRepository, event_factory: EventFactory):
         self._event_repository = event_repository
+        self._event_factory = event_factory
     
     #------------------
 
     def create_event(self, intention_id:str, start_time:datetime, duration:int):
-
-        event = Event(
-            id = str(uuid4()),
-            intention_id = intention_id,
-            start_time = start_time,
-            duration = duration
-        )
-
+        event = self._event_factory.create_event(intention_id=intention_id, start_time=start_time, duration=duration)
         self._event_repository.save(event)
         return event
 
     #------------------
 
-    def update_event_time(self, event_id:str, start_time:datetime, duration:Optional[int] = None):
+    def _get_event_or_raise(self, event_id:str) -> Event:
         event = self._event_repository.get_by_id(event_id)
-
         if not event:
             raise ValueError("Aucun événement trouvée.")
+        return event
 
+    #------------------
+
+    def update_event_time(self, event_id:str, start_time:datetime, duration:Optional[int] = None) -> Event:
+        event = self._get_event_or_raise(event_id)
         event.update_time(start_time, duration or event.get_info()["duration"])
         self._event_repository.save(event)
         return event
 
     #------------------
 
-    def complete_event(self, event_id:str):
-        event = self._event_repository.get_by_id(event_id)
-
-        if not event:
-            raise ValueError("Aucun événement trouvée.")
-
+    def complete_event(self, event_id:str) -> Event:
+        event = self._get_event_or_raise(event_id)
         event.complete()
         self._event_repository.save(event)
         return event    
 
     #------------------
 
-    def cancel_event(self, event_id:str):
-        event = self._event_repository.get_by_id(event_id)
-
-        if not event:
-            raise ValueError("Aucun événement trouvée.")
-
+    def cancel_event(self, event_id:str) -> Event:
+        event = self._get_event_or_raise(event_id)
         event.cancel()
         self._event_repository.save(event)
         return event
