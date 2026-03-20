@@ -1,10 +1,11 @@
 # ============ Imports ============
 from datetime import datetime
 from uuid import uuid4
+from typing import Optional
 
 from domain.entities.event import Event
 from domain.repositories.i_event_repository import IEventRepository
-from factories.intention_factory import EventFactory
+from factories.event_factory import EventFactory
 
 
 # ============ Notes ============  

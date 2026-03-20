@@ -11,23 +11,23 @@ class User:
 
     #Constructeur
     def __init__(self, email:str, username:str):
-        self.__id:str = str(uuid.uuid4())
-        self.__email:str = email
-        self.__username:str = username
-        self.__created_at:datetime = datetime.utcnow()
-        self.__metadata:Dict[str, Any] = {}
+        self._id:str = str(uuid.uuid4())
+        self._email:str = email
+        self._username:str = username
+        self._created_at:datetime = datetime.utcnow()
+        self._metadata:Dict[str, Any] = {}
 
     # -------------------------------------------------------------------
 
     #Constructeur alternatif pour la reconstruction d'un utilisateur depuis la BDD
     @classmethod
-    def from_persistence(cls, user_id:str, email:str, username:str, created_at:datetime, metadata:Dict[str, Any] = None) -> "User":
+    def from_persistence(cls, id:str, email:str, username:str, created_at:datetime, metadata:Dict[str, Any] = None) -> "User":
         user = cls.__new__(cls)
-        user.__id = user_id
-        user.__email = email
-        user.__username = username
-        user.__created_at = created_at
-        user.__metadata = metadata or {}
+        user._id = id
+        user._email = email
+        user._username = username
+        user._created_at = created_at
+        user._metadata = metadata or {}
 
         return user
     
@@ -35,10 +35,10 @@ class User:
 
     #Permet de récupérer les infos de l'user dans un formet prêt pour la BDD
     def to_persistence(self) -> Dict[str, Any]:
-        return {"id": self.__id, "email": self.__email, "username": self.__username, "created_at": str(self.__created_at), "metadata": json.dumps(self.__metadata)}
+        return {"id": self._id, "email": self._email, "username": self._username, "created_at": str(self._created_at), "metadata": json.dumps(self._metadata)}
     
     #Permet de récupérer les infos de l'user pour l'UI
     def get_user_info(self) -> Dict[str, Any]:
-        return {"id": self.__id, "email": self.__email, "username": self.__username, "created_at": self.__created_at, "metadata": dict(self.__metadata)}
+        return {"id": self._id, "email": self._email, "username": self._username, "created_at": self._created_at, "metadata": dict(self._metadata)}
 
     

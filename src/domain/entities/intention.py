@@ -10,9 +10,7 @@ from typing import Optional
 
 class Intention:
 
-    def __init__(self, id:str, user_id:str, title:str, category:str, object_id:Optional[str] = None,
-                is_active:bool = False, metadata:Optional[dict] = None
-    ):
+    def __init__(self, id:str, user_id:str, title:str, category:str, object_id:Optional[str] = None, is_active:bool = False, metadata:Optional[dict] = None):
         
         self._id = id
         self._user_id = user_id
