@@ -94,8 +94,24 @@ def main():
     # ==== Test Event ====
     print("\n=== Test event ===")
     print("Création d'un événement...")
-    # event = event_service.create_event(intention_id=intention.id, start_time=datetime.now(), duration=60)
-    # print(f"Événement créé: {event}")
+    event = event_service.create_event(intention_id=intention.id, start_time=datetime.now(), duration=60)
+    print(f"Événement créé: {event}")
+
+    print("\nMise à jour de l'heure de l'événement...")
+    event = event_service.update_event_time(event_id=event.id, start_time=datetime.now(), duration=90)
+    print(f"Événement mis à jour: {event}")
+
+    print("\nComplétion de l'événement...")
+    event = event_service.complete_event(event_id=event.id)
+    print(f"Événement complété: {event}")
+
+    print("\nAnnulation de l'événement...")
+    try:
+        event = event_service.cancel_event(event_id=event.id)
+        print(f"Événement annulé: {event}")
+    except ValueError as e:
+        print(f"Erreur lors de l'annulation de l'événement: {e}")
+
 
 
 

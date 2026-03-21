@@ -1,3 +1,6 @@
+# ==================== event_factory.py ====================
+
+# ============ Imports ============
 from datetime import datetime
 from uuid import uuid4
 
@@ -8,12 +11,13 @@ from domain.entities.event import Event
 
 class EventFactory:
 
-    def create(self, intention_id:str, start_time:datetime, duration:int) -> Event:
-
+    def create_event(self, intention_id:str, start_time:datetime, duration:int) -> Event:
         return Event(
+            id=str(uuid4()),
             intention_id=intention_id,
             start_time=start_time,
             duration=duration,
             status="planned",
-            created_at=datetime.utcnow()
+            created_at=datetime.utcnow(),
+            metadata={}
         )

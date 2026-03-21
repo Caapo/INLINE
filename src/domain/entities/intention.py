@@ -14,7 +14,7 @@ import json
 
 class Intention:
 
-    def __init__(self, id:str, user_id:str, title:str, category:str, object_id:Optional[str]=None, created_at:Optional[datetime]=None, metadata:Optional[dict]=None):
+    def __init__(self, id:str, user_id:str, title:str, category:str, object_id:Optional[str]=None, created_at:Optional[datetime]=None, metadata:Optional[dict[str, Any]]=None):
         
         self._id = id
         self._user_id = user_id

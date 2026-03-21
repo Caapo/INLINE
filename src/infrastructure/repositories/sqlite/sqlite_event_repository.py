@@ -1,3 +1,5 @@
+# ==================== sqlite_event_repository.py ====================
+
 # ============ Imports ============
 import sqlite3
 import json
@@ -22,6 +24,7 @@ class SQLiteEventRepository(IEventRepository):
                 intention_id TEXT NOT NULL,
                 start_time TEXT NOT NULL,
                 duration INTEGER NOT NULL,
+                end_time TEXT NOT NULL,
                 status TEXT NOT NULL,
                 created_at TEXT NOT NULL,
                 metadata TEXT
@@ -35,10 +38,10 @@ class SQLiteEventRepository(IEventRepository):
         cursor = self.connection.cursor()
         event_info = event.to_persistence()
         cursor.execute("""
-            INSERT OR REPLACE INTO events (id, intention_id, start_time, duration, status, created_at, metadata)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT OR REPLACE INTO events (id, intention_id, start_time, duration, end_time, status, created_at, metadata)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """, 
-            (event_info["id"], event_info["intention_id"], event_info["start_time"], event_info["duration"], event_info["status"],
+            (event_info["id"], event_info["intention_id"], event_info["start_time"], event_info["duration"], event_info["end_time"], event_info["status"],
             event_info["created_at"], event_info["metadata"])
         )
         self.connection.commit()
@@ -51,6 +54,7 @@ class SQLiteEventRepository(IEventRepository):
             intention_id=row["intention_id"],
             start_time=datetime.fromisoformat(row["start_time"]),
             duration=row["duration"],
+            end_time=datetime.fromisoformat(row["end_time"]),
             status=row["status"],
             created_at=datetime.fromisoformat(row["created_at"]),
             metadata=json.loads(row["metadata"]) if row["metadata"] else {}
@@ -60,7 +64,7 @@ class SQLiteEventRepository(IEventRepository):
 
     def get_by_id(self, event_id:str) -> Optional[Event]:
         cursor = self.connection.cursor()
-        cursor.execute("SELECT id, intention_id, start_time, duration, status, created_at, metadata FROM events WHERE id = ?", (event_id,))
+        cursor.execute("SELECT id, intention_id, start_time, duration, end_time, status, created_at, metadata FROM events WHERE id = ?", (event_id,))
         row = cursor.fetchone()
         return self._row_to_event(row) if row else None
 
@@ -70,7 +74,7 @@ class SQLiteEventRepository(IEventRepository):
 
     def get_by_intention(self, intention_id:str) -> List[Event]:
         cursor = self.connection.cursor()
-        cursor.execute("SELECT id, intention_id, start_time, duration, status, created_at, metadata FROM events WHERE intention_id = ?", (intention_id,))
+        cursor.execute("SELECT id, intention_id, start_time, duration, end_time, status, created_at, metadata FROM events WHERE intention_id = ?", (intention_id,))
         rows = cursor.fetchall()
         events = []
         for row in rows:
@@ -85,7 +89,7 @@ class SQLiteEventRepository(IEventRepository):
         cursor = self.connection.cursor()
         day_start = datetime.combine(day, datetime.min.time()).isoformat()
         day_end = datetime.combine(day, datetime.max.time()).isoformat()
-        cursor.execute("SELECT id, intention_id, start_time, duration, status, created_at, metadata FROM events WHERE start_time BETWEEN ? AND ?", (day_start, day_end))
+        cursor.execute("SELECT id, intention_id, start_time, duration, end_time, status, created_at, metadata FROM events WHERE start_time BETWEEN ? AND ?", (day_start, day_end))
         rows = cursor.fetchall()
         events = []
         for row in rows:

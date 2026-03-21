@@ -1,3 +1,4 @@
+# ==================== event_service.py ====================
 # ============ Imports ============
 from datetime import datetime
 from uuid import uuid4
@@ -16,7 +17,7 @@ from factories.event_factory import EventFactory
 # ============ Class ============  
 class EventService():
 
-    def __init__(self, event_repository:IEventRepository, event_factory: EventFactory):
+    def __init__(self, event_repository:IEventRepository, event_factory:EventFactory):
         self._event_repository = event_repository
         self._event_factory = event_factory
     
@@ -37,11 +38,11 @@ class EventService():
 
     #------------------
 
-    def update_event_time(self, event_id:str, start_time:datetime, duration:Optional[int] = None) -> Event:
+    def update_event_time(self, event_id:str, start_time:datetime, duration:Optional[int]=None) -> Event:
         event = self._get_event_or_raise(event_id)
         event.update_time(start_time, duration or event.get_info()["duration"])
         self._event_repository.save(event)
-        return event
+        return self._event_repository.get_by_id(event_id)
 
     #------------------
 
@@ -49,7 +50,7 @@ class EventService():
         event = self._get_event_or_raise(event_id)
         event.complete()
         self._event_repository.save(event)
-        return event    
+        return self._event_repository.get_by_id(event_id) 
 
     #------------------
 
@@ -57,4 +58,4 @@ class EventService():
         event = self._get_event_or_raise(event_id)
         event.cancel()
         self._event_repository.save(event)
-        return event
+        return self._event_repository.get_by_id(event_id)
