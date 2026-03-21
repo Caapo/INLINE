@@ -77,10 +77,38 @@ class Intention:
         return f"Intention(id={self._id}, title={self._title}, active={self._is_active})"
 
     #--------------------------------------------
-
+    #En attendant pour éviter d'avoir à ajouter un getter quand j'en ai besoin
     @property
     def id(self):
         return self._id
+
+    @property
+    def user_id(self):
+        return self._user_id
+
+    @property
+    def title(self):
+        return self._title
+    
+    @property
+    def category(self):
+        return self._category
+    
+    @property
+    def object_id(self):
+        return self._object_id
+
+    @property
+    def is_active(self):
+        return self._is_active
+
+    @property
+    def created_at(self):
+        return self._created_at
+
+    @property
+    def metadata(self):
+        return self._metadata
 
     #--------------------------------------------
 

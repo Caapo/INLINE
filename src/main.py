@@ -15,15 +15,18 @@ sys.path.append(str(root))
 from infrastructure.repositories.sqlite.sqlite_user_repository import SQLiteUserRepository
 from infrastructure.repositories.sqlite.sqlite_intention_repository import SQLiteIntentionRepository
 from infrastructure.repositories.sqlite.sqlite_event_repository import SQLiteEventRepository
+from infrastructure.repositories.sqlite.sqlite_environment_repository import SQLiteEnvironmentRepository
 
 # === Services===
 from application.services.user_service import UserService
 from application.services.intention_service import IntentionService
 from application.services.event_service import EventService
+from application.services.environment_service import EnvironmentService
 
 # === Factories ===
 from factories.intention_factory import IntentionFactory
 from factories.event_factory import EventFactory
+from factories.environment_factory import EnvironmentFactory
 
 
 # === Views ===
@@ -42,7 +45,6 @@ def main():
 
     # === Initialisation des dépendances ===
     print("Initialisation des dépendances...")
-
     base_dir = Path(__file__).resolve().parent.parent
     db_path = base_dir / "data" / "inline.db"  
 
@@ -50,17 +52,24 @@ def main():
     user_repo = SQLiteUserRepository(db_path)
     intention_repo = SQLiteIntentionRepository(db_path)
     event_repo = SQLiteEventRepository(db_path)
+    environment_repo = SQLiteEnvironmentRepository(db_path)
 
     #Factories
     intention_factory = IntentionFactory()
     event_factory = EventFactory()
+    environment_factory = EnvironmentFactory()
 
     #Services
     user_service = UserService(user_repo)
     intention_service = IntentionService(intention_repo, intention_factory)
     event_service = EventService(event_repo, event_factory)
+    environment_service = EnvironmentService(env_repo)
+    
+    #Queries
+    event_query = EventQuery(event_repo)
 
     print("Initialisation terminée.")
+
 
     # ==== Test Utilisateur ====
     print("\n=== Test utilisateur ===")
@@ -112,7 +121,15 @@ def main():
     except ValueError as e:
         print(f"Erreur lors de l'annulation de l'événement: {e}")
 
+    events = event_query.get_events_for_day(today)
+    print(events)
 
+
+    # === Test Environnement ====
+    print("\n=== Test environnement ===")
+    print("Création d'un environnement...")
+    environment = environment_service.create_environment(owner_id=user._id, name="Mon Environnement")
+    print(f"Environnement créé: {environment}")
 
 
 

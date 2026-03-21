@@ -100,10 +100,26 @@ class Event:
         )
 
     # ----------------------
-
+    #Pour l'UI
     @property
     def id(self):
         return self._id
+
+    @property
+    def start_time(self):
+        return self._start_time
+    
+    @property
+    def end_time(self):
+        return self._end_time
+    
+    @property
+    def status(self):
+        return self._status
+    
+    @property
+    def intention_id(self):
+        return self._intention_id
 
     # ----------------------
 
