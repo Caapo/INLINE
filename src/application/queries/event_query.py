@@ -9,9 +9,9 @@ from domain.repositories.i_intention_repository import IIntentionRepository
 # Cette classe permet d'assurer la gestion des requêtes liées aux événements, telles que la récupération des événements d'une journée donnée.
 # Elle interagit avec la base de données (SQLiteEventRepository)  pour récupérer les données des événements.
 
-class EventQueryService:
+class EventQuery:
 
-    def __init__(self, event_repository: IEventRepository, intention_repository:IIntentionRepository):
+    def __init__(self, event_repository:IEventRepository, intention_repository:IIntentionRepository):
         self._event_repository = event_repository
         self._intention_repository = intention_repository
 

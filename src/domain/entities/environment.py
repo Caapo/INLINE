@@ -4,6 +4,7 @@
 from typing import List, Optional, Any
 from domain.entities.i_interactive_object import IInteractiveObject
 from datetime import datetime
+import json
 
 class Environment:
     def __init__(self, id:str, owner_id:str, name:str, objects:Optional[List[IInteractiveObject]]=None, metadata:Optional[dict[str, Any]]=None):
@@ -14,6 +15,32 @@ class Environment:
         self._created_at = datetime.utcnow()
         self._metadata = metadata or {}
         
+
+    #------------------
+
+    def to_persistence(self) -> dict:
+        return {
+            "id": self.id,
+            "owner_id": self.owner_id,
+            "name": self.name,
+            "objects": json.dumps([o.get_info() for o in self.objects]),
+            "metadata": json.dumps(self._metadata),
+            "created_at": self._created_at.isoformat()
+        }
+
+    #-----------------
+
+    @classmethod
+    def from_persistence(cls, id, owner_id, name, objects, metadata, created_at):
+        env = cls(
+            id=id,
+            owner_id=owner_id,
+            name=name,
+            objects=[],
+            metadata=metadata
+        )
+        env._created_at = created_at
+        return env
 
     #------------------
 

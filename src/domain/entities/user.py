@@ -40,9 +40,16 @@ class User:
         return {"id": self._id, "email": self._email, "username": self._username, "created_at": str(self._created_at), "metadata": json.dumps(self._metadata)}
     
     # -------------------------------------------------------------------
-    
+
+
     def __repr__(self):
         return f"User(id={self._id}, email={self._email}, username={self._username}, created_at={self._created_at}, metadata={self._metadata})"
+
+    # -------------------------------------------------------------------
+
+    @property
+    def id(self):
+        return self._id
     
     # -------------------------------------------------------------------
     

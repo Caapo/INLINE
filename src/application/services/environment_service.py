@@ -3,7 +3,7 @@
 # ===== Imports =====
 from domain.repositories.i_environment_repository import IEnvironmentRepository
 from domain.entities.environment import Environment
-from factories.environment import EnvironmentFactory
+from factories.environment_factory import EnvironmentFactory
 from typing import Optional, List
 from uuid import uuid4
 
@@ -13,7 +13,7 @@ class EnvironmentService:
         self._environment_factory = environment_factory
 
     def create_environment(self, owner_id:str, name:str) -> Environment:
-        environment = self._environment_factory.create_environment(owner_id=owner_id, name=name, position=position)
+        environment = self._environment_factory.create_environment(owner_id=owner_id, name=name)
         self._environment_repository.save(environment)
         return environment
 
