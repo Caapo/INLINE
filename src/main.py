@@ -1,3 +1,5 @@
+# ==================================== main.py ====================================
+
 # === Général ===
 from PySide6.QtWidgets import QApplication
 import sys
@@ -61,32 +63,39 @@ def main():
     print("Initialisation terminée.")
 
     # ==== Test Utilisateur ====
-    print("\nTest utilisateur")
+    print("\n=== Test utilisateur ===")
+    print("Création d'un utilisateur...")
     user = user_service.create_user(email="usertest2@gmail.com", username="usertest2")
     user_info = user.get_user_info()
-    print(user_info["email"], user_info["username"])
+    # print(f"Utilisateur créé: {user_info}")
+    print(f"Utilisateur créé: {user}")
+
 
     # ==== Test Intention ====
-    print("\nTest intention")
-    intention = intention_service.create_intention(user_id=user._id, title="Test Intention", category="Test")
-    intention_info = intention.get_info()
-    print(intention_info["title"], intention_info["category"], intention_info["is_active"])
+    print("\n=== Test intention ===")
+    print("Création d'une intention...")
+    intention = intention_service.create_intention(user_id=user._id, title="Une Intention", category="Test")
+    print(f"Intention créée: {intention}")
 
-    # #Activation
-    # intention_service.activate_intention(intention.id)
-    # intention_repo.save(intention)
-    # print(f"Intention activée. Intention active pour l'utilisateur: {intention_service.get_active_intention(user.id)}")
-    # print(intention_info["title"], intention_info["category"], intention_info["is_active"])
-    # #Désactivation
-    # intention_service.deactivate_intention(intention.id)
-    # intention_repo.save(intention)
-    # print(f"Intention désactivée. Intention active pour l'utilisateur: {intention_service.get_active_intention(user.id)}")
-    # print(intention_info["title"], intention_info["category"], intention_info["is_active"])
+    print("\nActivation de l'intention...")
+    intention = intention_service.activate_intention(intention.id)
+    active_intention = intention_service.get_active_intention_by_user(user._id)
+    print(f"Intention en mémoire : {intention}")
+    print(f"Intention active pour l'utilisateur: {active_intention}")
 
-    # # ==== Test Event ====
-    # print("Test event")
-    # event_test = event_service.create_event(intention_id=intention.id, start_time=datetime.now(), duration=60)
-    # print(f"Event créé: {event_test.intention_id}, {event_test.start_time}, {event_test.duration}")
+
+    print("\nDésactivation de l'intention...")
+    intention = intention_service.deactivate_intention(intention.id)
+    active_intention = intention_service.get_active_intention_by_user(user._id)
+    print(f"Intention en mémoire: {intention}")
+    print(f"Intention active pour l'utilisateur: {active_intention}")
+    
+
+    # ==== Test Event ====
+    print("\n=== Test event ===")
+    print("Création d'un événement...")
+    # event = event_service.create_event(intention_id=intention.id, start_time=datetime.now(), duration=60)
+    # print(f"Événement créé: {event}")
 
 
 

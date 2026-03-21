@@ -1,3 +1,5 @@
+# ==================================== sqlite_intention_repository.py ====================================
+
 # ============ Imports ============
 import sqlite3
 import json
@@ -32,6 +34,12 @@ class SQLiteIntentionRepository(IIntentionRepository):
                 metadata TEXT
             )
         """)
+        #Une seule intention active par utilisateur
+        cursor.execute("""
+            CREATE UNIQUE INDEX IF NOT EXISTS idx_unique_active_intention
+            ON intentions(user_id)
+            WHERE is_active = 1
+        """)
         self.connection.commit()
 
     # ------------------
@@ -52,8 +60,8 @@ class SQLiteIntentionRepository(IIntentionRepository):
             data.get("category"),
             data["title"],
             1 if data["is_active"] else 0,
-            data["created_at"],
-            data["metadata"]
+            data["created_at"], #iso
+            data["metadata"] #json
         ))
 
         self.connection.commit()

@@ -1,6 +1,10 @@
+# ==================================== intention.py ====================================
+
 # ============ Imports ============
 from datetime import datetime
 from typing import Optional
+from typing import Any
+import json
 
 
 # ============ Notes ============  
@@ -10,16 +14,46 @@ from typing import Optional
 
 class Intention:
 
-    def __init__(self, id:str, user_id:str, title:str, category:str, object_id:Optional[str] = None, is_active:bool = False, metadata:Optional[dict] = None):
+    def __init__(self, id:str, user_id:str, title:str, category:str, object_id:Optional[str]=None, created_at:Optional[datetime]=None, metadata:Optional[dict]=None):
         
         self._id = id
         self._user_id = user_id
         self._title = title
         self._category = category
         self._object_id = object_id
-        self._is_active = is_active
-        self._created_at = datetime.utcnow()
+        self._is_active = False
+        self._created_at = created_at or datetime.utcnow()
         self._metadata = metadata or {}
+
+    #--------------------------------------------
+
+    @classmethod
+    def from_persistence(cls, id:str, user_id:str, title:str, category:str, object_id:Optional[str], is_active:bool, created_at:datetime, metadata:Optional[dict[str, Any]]=None) -> "Intention":
+        intention = cls.__new__(cls)
+        intention._id = id
+        intention._user_id = user_id
+        intention._title = title
+        intention._category = category
+        intention._object_id = object_id
+        intention._is_active = is_active
+        intention._created_at = created_at
+        intention._metadata = metadata or {}
+        return intention
+
+    #--------------------------------------------
+
+    def to_persistence(self) -> dict:
+
+        return {
+            "id": self._id,
+            "user_id": self._user_id,
+            "object_id": self._object_id,
+            "category": self._category,
+            "title": self._title,
+            "is_active": self._is_active,
+            "created_at": self._created_at.isoformat(),
+            "metadata": json.dumps(self._metadata)
+        }
 
     #--------------------------------------------
 
@@ -37,6 +71,16 @@ class Intention:
     def deactivate(self):
         self._is_active = False
 
+    #--------------------------------------------
+
+    def __repr__(self):
+        return f"Intention(id={self._id}, title={self._title}, active={self._is_active})"
+
+    #--------------------------------------------
+
+    @property
+    def id(self):
+        return self._id
 
     #--------------------------------------------
 

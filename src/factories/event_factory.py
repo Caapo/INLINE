@@ -11,7 +11,6 @@ class EventFactory:
     def create(self, intention_id:str, start_time:datetime, duration:int) -> Event:
 
         return Event(
-            event_id=str(uuid4()),
             intention_id=intention_id,
             start_time=start_time,
             duration=duration,

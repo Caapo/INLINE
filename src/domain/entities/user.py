@@ -1,3 +1,5 @@
+# ==================================== user.py ====================================
+
 # =========== Import =========== 
 
 import uuid
@@ -33,9 +35,16 @@ class User:
     
     # -------------------------------------------------------------------
 
-    #Permet de récupérer les infos de l'user dans un formet prêt pour la BDD
+    #Permet de récupérer les infos de l'user dans un format prêt pour la BDD
     def to_persistence(self) -> Dict[str, Any]:
         return {"id": self._id, "email": self._email, "username": self._username, "created_at": str(self._created_at), "metadata": json.dumps(self._metadata)}
+    
+    # -------------------------------------------------------------------
+    
+    def __repr__(self):
+        return f"User(id={self._id}, email={self._email}, username={self._username}, created_at={self._created_at}, metadata={self._metadata})"
+    
+    # -------------------------------------------------------------------
     
     #Permet de récupérer les infos de l'user pour l'UI
     def get_user_info(self) -> Dict[str, Any]:

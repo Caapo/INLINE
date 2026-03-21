@@ -1,7 +1,10 @@
+# ==================================== intention_service.py ====================================
+
 # ============ Imports ============ 
 from domain.entities.intention import Intention
 from domain.repositories.i_intention_repository import IIntentionRepository
 from factories.intention_factory import IntentionFactory
+from typing import Optional
 
 
 # ============ Notes ============  
@@ -31,19 +34,33 @@ class IntentionService:
 
     #----------------------
 
+    def get_active_intention_by_user(self, user_id:str) -> Optional[Intention]:
+        return self._intention_repository.get_active(user_id)
+
+    #----------------------
+
     def rename_intention(self, intention_id:str, new_title:str) -> Intention:
         intention = self._get_intention_or_raise(intention_id)
         intention.rename(new_title)
         self._intention_repository.save(intention)
-        return intention
+        return self._intention_repository.get_by_id(intention_id)
 
     #----------------------
 
     def activate_intention(self, intention_id:str) -> Intention:
         intention = self._get_intention_or_raise(intention_id)
+
+        #désactive l'intention active actuelle
+        active = self._intention_repository.get_active(intention._user_id)
+        if active and active._id != intention_id:
+            active.deactivate()
+            self._intention_repository.save(active)
+
+        #active la nouvelle intention
         intention.activate()
         self._intention_repository.save(intention)
-        return intention
+
+        return self._intention_repository.get_by_id(intention_id)
         
     #----------------------
 
@@ -51,4 +68,4 @@ class IntentionService:
         intention = self._get_intention_or_raise(intention_id)
         intention.deactivate()
         self._intention_repository.save(intention)
-        return intention
+        return self._intention_repository.get_by_id(intention_id)

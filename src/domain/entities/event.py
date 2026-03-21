@@ -13,7 +13,7 @@ from typing import Optional
 
 class Event:
 
-    def __init__(self, id:str, intention_id:str, start_time:datetime, duration:int, status:str = "planned", metadata:Optional[dict] = None):
+    def __init__(self, id:str, intention_id:str, start_time:datetime, duration:int, status:str="planned", metadata:Optional[dict]=None):
         self._id = id
         self._intention_id = intention_id
         self._start_time = start_time
@@ -63,6 +63,11 @@ class Event:
             "created_at": self._created_at.isoformat(),
             "metadata": json.dumps(self._metadata)
         }
+
+    # ----------------------
+
+    def __repr__(self):
+        return f"Event(id={self._id}, intention_id={self._intention_id}, start_time={self._start_time}, duration={self._duration}, status={self._status}, created_at={self._created_at}, metadata={self._metadata})"
 
     # ----------------------
 
