@@ -3,7 +3,7 @@
 # ============ Imports ============
 from datetime import datetime
 from uuid import uuid4
-
+from domain.enums.enums import EventStatus
 from domain.entities.event import Event
 
 # ============ Notes ============  
@@ -11,13 +11,19 @@ from domain.entities.event import Event
 
 class EventFactory:
 
-    def create_event(self, intention_id:str, start_time:datetime, duration:int) -> Event:
+    def create_event(self, intention_id:str, environment_id:str, start_time:datetime, duration:int) -> Event:
+        if start_time < datetime.utcnow():
+            raise ValueError("L'heure de début doit être dans le futur.")
+        if duration <= 0:
+            raise ValueError("La durée doit être un entier strictement positif.")
+        
         return Event(
             id=str(uuid4()),
             intention_id=intention_id,
+            environment_id=environment_id,
             start_time=start_time,
             duration=duration,
-            status="planned",
+            status=EventStatus.PLANNED.value,
             created_at=datetime.utcnow(),
             metadata={}
         )

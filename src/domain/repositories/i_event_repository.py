@@ -3,7 +3,7 @@
 # ============ Imports ============
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from datetime import date
+from datetime import date, datetime
 from domain.entities.event import Event
 
 # ============ Notes ============
@@ -28,4 +28,12 @@ class IEventRepository(ABC):
 
     @abstractmethod
     def get_by_date(self, day:date) -> List[Event]:
+        pass
+
+    @abstractmethod
+    def get_by_environment_and_date(self, environment_id:str, day:date) -> List[Event]:
+        pass
+
+    @abstractmethod
+    def get_between(self, environment_id:str, start:datetime, end:datetime) -> List[Event]:
         pass

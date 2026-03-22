@@ -4,7 +4,7 @@
 from PySide6.QtWidgets import QApplication
 import sys
 from pathlib import Path
-from datetime import datetime
+from datetime import date, datetime
 
 #Dossier racine du projet
 root = Path(__file__).resolve().parents[1]
@@ -30,7 +30,7 @@ from factories.environment_factory import EnvironmentFactory
 
 # === Queries ===
 from application.queries.event_query import EventQuery
-
+from application.queries.timeline_query import TimelineQuery
 
 # === Views ===
 from presentation.views.authentification.authentification_view import AuthentificationView
@@ -41,6 +41,11 @@ import assets.resources_rc
 from domain.entities.i_interactive_object import IInteractiveObject
 from domain.entities.clickable_object import ClickableObject
 from domain.enums.enums import ObjectCategory
+from domain.enums.enums import EventStatus
+
+
+
+
 
 
 # ================ MAIN =================
@@ -74,6 +79,7 @@ def main():
     
     #Queries
     event_query = EventQuery(event_repo, intention_repo)
+    timeline_query = TimelineQuery(event_repo)
 
     print("Initialisation terminée.")
 
@@ -107,31 +113,7 @@ def main():
     print(f"Intention active pour l'utilisateur: {active_intention}")
     
 
-    # ==== Test Event ====
-    print("\n=== Test event ===")
-    print("Création d'un événement...")
-    event = event_service.create_event(intention_id=intention.id, start_time=datetime.now(), duration=60)
-    print(f"Événement créé: {event}")
-
-    print("\nMise à jour de l'heure de l'événement...")
-    event = event_service.update_event_time(event_id=event.id, start_time=datetime.now(), duration=90)
-    print(f"Événement mis à jour: {event}")
-
-    print("\nComplétion de l'événement...")
-    event = event_service.complete_event(event_id=event.id)
-    print(f"Événement complété: {event}")
-
-    print("\nAnnulation de l'événement...")
-    try:
-        event = event_service.cancel_event(event_id=event.id)
-        print(f"Événement annulé: {event}")
-    except ValueError as e:
-        print(f"Erreur lors de l'annulation de l'événement: {e}")
-
-  
-
-
-    # === Test Environnement ====
+        # === Test Environnement ====
     print("\n=== Test environnement ===")
     print("Création d'un environnement...")
     environment = environment_service.create_environment(owner_id=user.id, name="Mon Environnement")
@@ -172,6 +154,40 @@ def main():
 
     
     print(f"État de l'environnement: {environment.get_info()}\n")
+
+
+
+    # ==== Test Event ====
+    print("\n=== Test event ===")
+    print("Création d'un événement...")
+    event = event_service.create_event(intention_id=intention.id, environment_id=environment.id, start_time=datetime.now(), duration=60)
+    print(f"Événement créé: {event}")
+
+    print("\nMise à jour de l'heure de l'événement...")
+    event = event_service.update_event_time(event_id=event.id, start_time=datetime.now(), duration=90)
+    print(f"Événement mis à jour: {event}")
+
+    print("\nComplétion de l'événement...")
+    event = event_service.complete_event(event_id=event.id)
+    print(f"Événement complété: {event}")
+
+    print("\nAnnulation de l'événement...")
+    try:
+        event = event_service.cancel_event(event_id=event.id)
+        print(f"Événement annulé: {event}")
+    except ValueError as e:
+        print(f"Erreur lors de l'annulation de l'événement: {e}")
+
+
+    print("\n=== Test Timeline ===")
+    events_today = timeline_query.get_events_for_environment_and_day(environment_id=environment.id, day=date.today())
+
+    print("Timeline:", events_today)
+
+  
+
+
+
 
 
 

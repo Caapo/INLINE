@@ -23,8 +23,8 @@ class EventService():
     
     #------------------
 
-    def create_event(self, intention_id:str, start_time:datetime, duration:int):
-        event = self._event_factory.create_event(intention_id=intention_id, start_time=start_time, duration=duration)
+    def create_event(self, intention_id:str, environment_id:str, start_time:datetime, duration:int):
+        event = self._event_factory.create_event(intention_id=intention_id, environment_id=environment_id, start_time=start_time, duration=duration)
         self._event_repository.save(event)
         return event
 
@@ -33,14 +33,25 @@ class EventService():
     def _get_event_or_raise(self, event_id:str) -> Event:
         event = self._event_repository.get_by_id(event_id)
         if not event:
-            raise ValueError("Aucun événement trouvée.")
+            raise ValueError("Aucun événement trouvé.")
         return event
+
+    #------------------
+
+    def get_events_for_environment_and_day(self, environment_id:str, day:datetime):
+        return self._event_repository.get_by_environment_and_date(environment_id, day.date())
+
+    #------------------
+    
+    def get_events_between(self, environment_id:str, start:datetime, end:datetime):
+        return self._event_repository.get_between(environment_id, start, end)
 
     #------------------
 
     def update_event_time(self, event_id:str, start_time:datetime, duration:Optional[int]=None) -> Event:
         event = self._get_event_or_raise(event_id)
-        event.update_time(start_time, duration or event.get_info()["duration"])
+        new_duration = duration if duration is not None else event.duration
+        event.update_time(start_time, new_duration)
         self._event_repository.save(event)
         return self._event_repository.get_by_id(event_id)
 
