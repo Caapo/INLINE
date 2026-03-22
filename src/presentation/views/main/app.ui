@@ -39,7 +39,7 @@
           <number>6</number>
          </property>
          <item>
-          <widget class="QLabel" name="label_2">
+          <widget class="QLabel" name="logo">
            <property name="minimumSize">
             <size>
              <width>40</width>
@@ -64,7 +64,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="label_3">
+          <widget class="QLabel" name="menuLabel">
            <property name="font">
             <font>
              <pointsize>15</pointsize>
@@ -119,7 +119,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="modulesFullButton">
+          <widget class="QPushButton" name="notesFullButton">
            <property name="text">
             <string>Notes</string>
            </property>
@@ -137,7 +137,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_8">
+          <widget class="QPushButton" name="modulesFullButton">
            <property name="text">
             <string>Modules</string>
            </property>
@@ -238,7 +238,7 @@
            <number>0</number>
           </property>
           <property name="rightMargin">
-           <number>0</number>
+           <number>9</number>
           </property>
           <property name="bottomMargin">
            <number>0</number>
@@ -272,6 +272,9 @@
           </item>
           <item>
            <layout class="QHBoxLayout" name="horizontalLayout">
+            <property name="spacing">
+             <number>10</number>
+            </property>
             <item>
              <widget class="QLineEdit" name="lineEdit">
               <property name="placeholderText">
@@ -425,7 +428,7 @@
        <item>
         <layout class="QHBoxLayout" name="horizontalLayout_3">
          <item>
-          <widget class="QLabel" name="label">
+          <widget class="QLabel" name="logoLabel2">
            <property name="minimumSize">
             <size>
              <width>50</width>
@@ -454,6 +457,12 @@
        <item>
         <layout class="QVBoxLayout" name="verticalLayout">
          <property name="spacing">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
           <number>0</number>
          </property>
          <item>
@@ -505,7 +514,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="modulesIconButton">
+          <widget class="QPushButton" name="notesIconButton">
            <property name="text">
             <string/>
            </property>
@@ -529,7 +538,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="pushButton_3">
+          <widget class="QPushButton" name="modulesIconButton">
            <property name="text">
             <string/>
            </property>
@@ -635,14 +644,14 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_3</sender>
+   <sender>modulesIconButton</sender>
    <signal>toggled(bool)</signal>
-   <receiver>pushButton_8</receiver>
+   <receiver>modulesFullButton</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>28</x>
-     <y>154</y>
+     <x>29</x>
+     <y>185</y>
     </hint>
     <hint type="destinationlabel">
      <x>82</x>
@@ -657,12 +666,12 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>105</x>
-     <y>173</y>
+     <x>163</x>
+     <y>199</y>
     </hint>
     <hint type="destinationlabel">
-     <x>29</x>
-     <y>180</y>
+     <x>30</x>
+     <y>218</y>
     </hint>
    </hints>
   </connection>
@@ -705,12 +714,12 @@
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>23</x>
-     <y>185</y>
+     <x>24</x>
+     <y>218</y>
     </hint>
     <hint type="destinationlabel">
-     <x>85</x>
-     <y>173</y>
+     <x>147</x>
+     <y>199</y>
     </hint>
    </hints>
   </connection>
@@ -741,15 +750,15 @@
      <y>97</y>
     </hint>
     <hint type="destinationlabel">
-     <x>35</x>
-     <y>89</y>
+     <x>36</x>
+     <y>119</y>
     </hint>
    </hints>
   </connection>
   <connection>
-   <sender>modulesIconButton</sender>
+   <sender>notesIconButton</sender>
    <signal>toggled(bool)</signal>
-   <receiver>modulesFullButton</receiver>
+   <receiver>notesFullButton</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -763,9 +772,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>pushButton_8</sender>
+   <sender>modulesFullButton</sender>
    <signal>toggled(bool)</signal>
-   <receiver>pushButton_3</receiver>
+   <receiver>modulesIconButton</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -773,8 +782,8 @@
      <y>145</y>
     </hint>
     <hint type="destinationlabel">
-     <x>37</x>
-     <y>154</y>
+     <x>38</x>
+     <y>185</y>
     </hint>
    </hints>
   </connection>
@@ -795,9 +804,9 @@
    </hints>
   </connection>
   <connection>
-   <sender>modulesFullButton</sender>
+   <sender>notesFullButton</sender>
    <signal>toggled(bool)</signal>
-   <receiver>modulesIconButton</receiver>
+   <receiver>notesIconButton</receiver>
    <slot>setChecked(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -807,6 +816,38 @@
     <hint type="destinationlabel">
      <x>32</x>
      <y>123</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>quitFullButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>122</x>
+     <y>626</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>207</x>
+     <y>682</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>quitIconButton</sender>
+   <signal>clicked()</signal>
+   <receiver>MainWindow</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>25</x>
+     <y>632</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>214</x>
+     <y>800</y>
     </hint>
    </hints>
   </connection>

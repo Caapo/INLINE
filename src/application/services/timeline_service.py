@@ -1,13 +1,12 @@
+# ====== INLINE/src/application/services/timeline_service.py ======
+
 # ============ Imports ============
 from datetime import date
-from domain.repositories.event_repository import IEventRepository
+from domain.repositories.i_event_repository import IEventRepository
 
 
-# ============ Notes ============
+# ============ class TimelineService ============
 # Cette classe permet de gérer la timeline d'un utilisateur, en récupérant les événements liés à ses intentions pour une journée donnée.
-
-
-# ============ Class ============
 
 class TimelineService:
 

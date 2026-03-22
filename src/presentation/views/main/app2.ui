@@ -101,7 +101,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QPushButton" name="visualisationFullButton">
+          <widget class="QPushButton" name="visualizationFullButton">
            <property name="text">
             <string>Visualisation</string>
            </property>

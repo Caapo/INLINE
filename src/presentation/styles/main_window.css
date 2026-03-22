@@ -1,0 +1,96 @@
+/* ======= INLINE/src/presentation/styles/main_window.css ======= */
+
+#MainWindow {
+    background-color: #000000;
+}
+
+
+#menuButton {
+    padding: 5px;
+    border: none;
+    width: 30px;
+    height: 30px;
+}
+
+
+#widget {
+    background-color: #d4d4d4;
+}
+
+
+#iconOnlyMenu {
+    background-color: #313a46;
+    width: 50px;
+}
+
+
+#iconOnlyMenu QPushButton, #iconOnlyMenu QLabel {
+    height: 50px;
+    border: none;
+}
+
+
+#iconOnlyMenu QPushButton:hover {
+    background-color: rgba(86, 101, 115, 0.5);
+}
+
+
+#logoLabel2 {
+    padding: 5px;
+}
+
+
+#fullMenu {
+    background-color: #313a46;
+}
+
+
+#fullMenu QPushButton {
+    border: none;
+    border-radius: 3px;
+    text-align: left;
+    padding: 8px 0 8px 15px;
+    color: #788596;
+}
+
+
+#fullMenu QPushButton:hover {
+    background-color: rgba(86, 101, 115, 0.5);
+}
+
+
+#fullMenu QPushButton:checked {
+    color: #000000;
+}
+
+
+#logo, #menuLabel {
+    padding: 5px;
+    color: #d4d4d4;
+}
+
+
+#searchButton {
+    border: none;
+}
+
+
+#lineEdit {
+    border: none;
+    padding: 5px 10px;
+}
+
+
+#lineEdit:focus {
+    background-color: #70B9FE;
+}
+
+
+#userButton {
+    border: none;
+}
+
+
+#quitFullButton, #quitIconButton {
+    border: none;
+}
