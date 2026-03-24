@@ -1,4 +1,4 @@
-# ==================================== intention_factory.py ====================================
+# ==================================== INLINE/src/factories/intention_factory.py ====================================
 
 # ============ Imports ============
 from datetime import datetime
@@ -7,7 +7,7 @@ from uuid import uuid4
 from domain.entities.intention import Intention
 
 
-# ============ Notes ============  
+# ============ Class IntentionFactory ============  
 # Cette classe permet de créer des instances d'intentions, en encapsulant la logique de création.
 
 class IntentionFactory:
@@ -19,5 +19,5 @@ class IntentionFactory:
             title=title,
             category=category,
             created_at=datetime.utcnow(),
-            metadata={}
+            metadata={} 
         )

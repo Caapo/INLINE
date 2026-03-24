@@ -1,4 +1,4 @@
-# ==================== event_factory.py ====================
+# ==================== INLINE/src/factories/event_factory.py ====================
 
 # ============ Imports ============
 from datetime import datetime
@@ -6,7 +6,7 @@ from uuid import uuid4
 from domain.enums.enums import EventStatus
 from domain.entities.event import Event
 
-# ============ Notes ============  
+# ============ class EventFactory ============  
 # Cette classe permet de créer des instances d'événements, en encapsulant la logique de création.
 
 class EventFactory:

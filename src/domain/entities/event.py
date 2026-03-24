@@ -1,4 +1,4 @@
-# ==================== event.py ====================
+# ==================== INLINE/src/domain/entities/event.py ====================
 # ============ Imports ============
 from datetime import datetime, timedelta
 from typing import Optional
@@ -6,13 +6,10 @@ from typing import Any
 import json
 from domain.enums.enums import EventStatus
 
-# ============ Notes ============  
+# ============ class Event ============  
 # Cette classe permet de représenter un événement lié à une intention, en stockant des informations 
 # telles que l'heure de début, la durée, le statut (planifié, complété, annulé).
-
-
-
-# ============ Class ============   
+ 
 
 class Event:
 

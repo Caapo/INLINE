@@ -1,4 +1,4 @@
-# ======== environment.py =========
+# ======== INLINE/src/domain/entities/environment.py =========
 
 # ===== Imports =====
 from typing import List, Optional, Any

@@ -1,16 +1,13 @@
-# ==================================== i_intention_repository.py ====================================
+# ==================================== INLINE/src/domain/repositories/i_intention_repository.py ====================================
 
 # ============ Imports ============
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from domain.entities.intention import Intention
 
-# ============ Notes ============
+# ============ Class IIntentionRepository ============
 # Cette interface définit les méthodes que doit implémenter un stockage d'intentions
 
-
-
-# ============ Class ============
 
 class IIntentionRepository(ABC):
 
@@ -28,4 +25,8 @@ class IIntentionRepository(ABC):
 
     @abstractmethod
     def get_active(self, user_id:str) -> Optional[Intention]:
+        pass
+
+    @abstractmethod
+    def get_all(self) -> List[Intention]:
         pass

@@ -1,4 +1,4 @@
-# ==================== event_service.py ====================
+# ==================== INLINE/src/application/services/event_service.py ====================
 # ============ Imports ============
 from datetime import datetime
 from uuid import uuid4
@@ -9,12 +9,11 @@ from domain.repositories.i_event_repository import IEventRepository
 from factories.event_factory import EventFactory
 
 
-# ============ Notes ============  
+# ============ Class EventService ============  
 # Cette classe permet d'assurer la gestion des événements, tels que la création, la mise à jour, la complétion et l'annulation d'événements. 
 # Elle interagit avec la base de données (SQLiteEventRepository)  pour stocker et récupérer les données des événements.
 
 
-# ============ Class ============  
 class EventService():
 
     def __init__(self, event_repository:IEventRepository, event_factory:EventFactory):

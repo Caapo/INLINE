@@ -1,4 +1,4 @@
-# ======== i_environment_repository.py =========
+# ======== INLINE/src/domain/repositories/i_environment_repository.py =========
 
 # ===== Imports =====
 from abc import ABC, abstractmethod

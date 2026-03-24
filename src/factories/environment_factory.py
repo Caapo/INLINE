@@ -1,5 +1,5 @@
-# ====== environment_factory.py ======
-
+# ====== INLINE/src/factories/environment_factory.py ======
+    
 # ===== Imports =====
 from domain.entities.environment import Environment
 from uuid import uuid4

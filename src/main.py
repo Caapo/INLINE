@@ -194,11 +194,41 @@ from domain.enums.enums import EventStatus
 
 
 def main():
-    
     app = QApplication(sys.argv)
-    window = MainWindow()
+
+    # DB PATH
+    base_dir = Path(__file__).resolve().parent.parent
+    db_path = base_dir / "data" / "inline.db"
+
+    
+    # REPOSITORIES
+    user_repo = SQLiteUserRepository(db_path)
+    intention_repo = SQLiteIntentionRepository(db_path)
+    event_repo = SQLiteEventRepository(db_path)
+    environment_repo = SQLiteEnvironmentRepository(db_path)
+
+    # FACTORIES
+    intention_factory = IntentionFactory()
+    event_factory = EventFactory()
+    environment_factory = EnvironmentFactory()
+
+    # SERVICES
+    user_service = UserService(user_repo)
+    intention_service = IntentionService(intention_repo, intention_factory)
+    event_service = EventService(event_repo, event_factory)
+    environment_service = EnvironmentService(environment_repo, environment_factory)
+
+    # UI
+    window = MainWindow(
+        intention_service=intention_service,
+        event_service=event_service,
+        environment_service=environment_service
+    )
+
+    window.show()
     sys.exit(app.exec())
 
 
+    
 if __name__ == "__main__":
     main()

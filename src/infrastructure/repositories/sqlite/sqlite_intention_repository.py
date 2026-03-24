@@ -1,4 +1,4 @@
-# ==================================== sqlite_intention_repository.py ====================================
+# ==================================== INLINE/src/infrastructure/repositories/sqlite/sqlite_intention_repository.py ====================================
 
 # ============ Imports ============
 import sqlite3
@@ -10,7 +10,9 @@ from domain.entities.intention import Intention
 from domain.repositories.i_intention_repository import IIntentionRepository
 
 
-# ============ Class ============
+# ============ Class SQLiteIntentionRepository ============
+# Cette classe implémente l'interface IIntentionRepository en utilisant SQLite comme système de stockage.
+
 class SQLiteIntentionRepository(IIntentionRepository):
 
     def __init__(self, db_path: str):
@@ -124,3 +126,11 @@ class SQLiteIntentionRepository(IIntentionRepository):
 
         row = cursor.fetchone()
         return self._row_to_intention(row) if row else None
+
+    #------------------
+
+    def get_all(self) -> list[Intention]:
+        cursor = self.connection.cursor()
+        cursor.execute("SELECT * FROM intentions")
+        rows = cursor.fetchall()
+        return [self._row_to_intention(row) for row in rows]

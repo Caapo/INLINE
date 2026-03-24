@@ -1,4 +1,4 @@
-# ==================== i_event_repository.py ====================
+# ==================== INLINE/src/domain/repositories/i_event_repository.py ====================
 
 # ============ Imports ============
 from abc import ABC, abstractmethod
@@ -6,11 +6,9 @@ from typing import List, Optional
 from datetime import date, datetime
 from domain.entities.event import Event
 
-# ============ Notes ============
+# ============ Class IEventRepository ============
 # Cette interface définit les méthodes que doit implémenter un stockage d'événements
 
-
-# ============ Class ============
 
 class IEventRepository(ABC):
 

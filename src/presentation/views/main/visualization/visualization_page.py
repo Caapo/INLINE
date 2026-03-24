@@ -1,23 +1,23 @@
-#INLINE/src/presentation/views/main/visualization/visualization_page.py
-
+#==== INLINE/src/presentation/views/main/visualization/visualization_page.py ====
 
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QSizePolicy
+    QFrame, QSizePolicy, QInputDialog, QDialog, QListWidget
 )
 from PySide6.QtCore import Qt, Signal, QPoint
 from PySide6.QtGui import QPainter, QColor, QPen
+from datetime import datetime
 
 
-#Objet interactif cliquable et déplaçable
+# ObjectWidget
 class ObjectWidget(QFrame):
+    clicked = Signal(str)
 
     def __init__(self, name: str, width=80, height=50, parent=None):
         super().__init__(parent)
         self.setFrameShape(QFrame.Box)
         self.setFixedSize(width, height)
 
-        #Label pour le nom de l'objet
         self.label = QLabel(name, self)
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setGeometry(0, 0, width, height)
@@ -25,12 +25,13 @@ class ObjectWidget(QFrame):
 
         self._drag_active = False
         self._drag_offset = QPoint(0, 0)
+        self._drag_threshold = 5
 
-    #Drag
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
             self._drag_active = True
             self._drag_offset = event.position().toPoint()
+            self._start_pos = self.pos()
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
@@ -40,14 +41,17 @@ class ObjectWidget(QFrame):
         super().mouseMoveEvent(event)
 
     def mouseReleaseEvent(self, event):
-        self._drag_active = False
+        if event.button() == Qt.LeftButton:
+            self._drag_active = False
+            distance = (self.pos() - self._start_pos).manhattanLength()
+            if distance <= self._drag_threshold:
+                self.clicked.emit(self.label.text())
         super().mouseReleaseEvent(event)
 
 
-# ------------------ EnvironmentSwitcher ------------------
-#Permet de naviguer entre les environnements
-class EnvironmentSwitcher(QWidget):
 
+# EnvironmentSwitcher
+class EnvironmentSwitcher(QWidget):
     environment_changed = Signal(str)
 
     def __init__(self, environments=None, parent=None):
@@ -70,26 +74,26 @@ class EnvironmentSwitcher(QWidget):
 
     def prev_env(self):
         self.current_index = (self.current_index - 1) % len(self.environments)
-        self._update_label()
+        self._update()
 
     def next_env(self):
         self.current_index = (self.current_index + 1) % len(self.environments)
-        self._update_label()
+        self._update()
 
-    def _update_label(self):
+    def _update(self):
         env = self.environments[self.current_index]
         self.label.setText(env)
         self.environment_changed.emit(env)
 
 
-# ------------------ TimelineWidget ------------------
-#Timeline horizontale
+
+# TimelineWidget
 class TimelineWidget(QWidget):
-   
-    def __init__(self, parent=None, hours_range=(8, 20)):
+    def __init__(self, parent=None, hours_range=(0, 23)):
         super().__init__(parent)
         self.hours_range = hours_range
         self.events = []
+
         self.setMinimumHeight(80)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
 
@@ -105,92 +109,243 @@ class TimelineWidget(QWidget):
 
         painter.fillRect(rect, QColor(230, 230, 230))
 
-        #Repères horaires
         start, end = self.hours_range
         num_hours = end - start + 1
         hour_width = width / num_hours
 
-        pen = QPen(QColor(180, 180, 180))
-        painter.setPen(pen)
+        # Grille horaire
+        painter.setPen(QPen(QColor(180, 180, 180)))
         for i in range(num_hours):
             x = i * hour_width
             painter.drawLine(int(x), 0, int(x), height)
             painter.drawText(int(x) + 2, 12, f"{start + i}h")
 
-        #Événements
-        pen = QPen(QColor(100, 150, 200))
-        painter.setPen(pen)
+        # Events
+        painter.setPen(QPen(QColor(100, 150, 200)))
         painter.setBrush(QColor(100, 150, 200, 180))
+
+        offset = {}
         for ev in self.events:
             start_x = (ev["start_hour"] - start) * hour_width
             w = ev["duration_hour"] * hour_width
-            painter.drawRect(int(start_x), 25, int(w), 40)
-            painter.drawText(int(start_x) + 2, 45, ev["name"])
+            y = 25 + offset.get(start_x, 0) * 20
+            painter.drawRect(int(start_x), int(y), int(w), 15)
+            painter.drawText(int(start_x) + 2, int(y) + 12, ev["name"])
+            offset[start_x] = offset.get(start_x, 0) + 1
 
 
-# ------------------ VisualizationPage ------------------
-#Page complète de visualisation avec objets et timeline
-class VisualizationPage(QWidget):
-
-    def __init__(self, parent=None):
+# IntentionManagerDialog
+class IntentionManagerDialog(QDialog):
+    def __init__(self, parent=None, intention_service=None, timeline_widget=None, event_service=None):
         super().__init__(parent)
+        self.intention_service = intention_service
+        self.event_service = event_service
+        self.timeline_widget = timeline_widget
+
+        self.setWindowTitle("Gestion des intentions")
+        self.resize(400, 300)
+
+        layout = QVBoxLayout(self)
+
+        self.list_widget = QListWidget()
+        layout.addWidget(self.list_widget)
+
+        self.btn_create_event = QPushButton("Créer événement")
+        layout.addWidget(self.btn_create_event)
+        self.btn_create_event.clicked.connect(self.add_event_for_selected)
+
+        self.load_intentions()
+
+    def load_intentions(self):
+        self.list_widget.clear()
+        if not self.intention_service:
+            return
+        #Méthode à ajouter dans IntentionService: get_all_intentions()
+        for i in self.intention_service.get_all_intentions():
+            self.list_widget.addItem(f"{i.id}: {i.title}")
+
+    def add_event_for_selected(self):
+        selected_items = self.list_widget.selectedItems()
+        if not selected_items:
+            return
+    
+        for item in selected_items:
+            text = item.text()
+            title = text.split(":", 1)[1].strip()
+    
+            # Saisie horaire
+            start_hour, ok1 = QInputDialog.getInt(self, "Début", f"Heure de début pour {title}", 8, 0, 23)
+            duration_minutes, ok2 = QInputDialog.getInt(self, "Durée (minutes)", f"Durée (minutes) pour {title}", 60, 1, 1440)
+            if not (ok1 and ok2):
+                continue
+    
+            # Création datetime de début basé sur aujourd'hui
+            now = datetime.utcnow()
+            start_time = now.replace(hour=start_hour, minute=0, second=0, microsecond=0)
+    
+            # Création via EventService
+            if self.event_service:
+                env_id = getattr(self.parent(), "current_environment", "Default")
+                # récupération de l'id de l’intention : ici simplifié, en prenant le premier qui correspond au titre
+                intention_list = self.intention_service.get_all_intentions()
+                intention_obj = next((i for i in intention_list if i.title == title), None)
+                if intention_obj:
+                    self.event_service.create_event(
+                        intention_id=intention_obj.id,
+                        environment_id=env_id,
+                        start_time=start_time,
+                        duration=duration_minutes
+                    )
+    
+            # Ajout direct à la timeline pour l'affichage
+            if self.timeline_widget:
+                self.timeline_widget.events.append({
+                    "name": title,
+                    "start_hour": start_hour,
+                    "duration_hour": duration_minutes / 60
+                })
+                self.timeline_widget.update()
+
+
+from PySide6.QtWidgets import QCalendarWidget, QDialog, QVBoxLayout, QPushButton
+from datetime import datetime, timedelta
+
+
+# VisualizationPage 
+class VisualizationPage(QWidget):
+    def __init__(self, intention_service=None, event_service=None, environment_service=None, parent=None):
+        super().__init__(parent)
+        self.intention_service = intention_service
+        self.event_service = event_service
+        self.environment_service = environment_service
 
         self.current_environment = "Default"
         self.objects = []
+        self.current_day = datetime.utcnow().date()  # jour affiché par défaut
 
         self._init_ui()
-        self._load_environment(self.current_environment)
+        self.refresh_events()
 
     def _init_ui(self):
         layout = QVBoxLayout(self)
 
-        #--- Haut : EnvironmentSwitcher ---
+        # --- Sélecteur de jour ---
+        day_layout = QHBoxLayout()
+        self.btn_prev_day = QPushButton("← Jour précédent")
+        self.btn_next_day = QPushButton("Jour suivant →")
+        self.btn_select_day = QPushButton("Choisir un jour…")
+        self.lbl_current_day = QLabel(self.current_day.strftime("%Y-%m-%d"))
+        self.lbl_current_day.setAlignment(Qt.AlignCenter)
+
+        day_layout.addWidget(self.btn_prev_day)
+        day_layout.addWidget(self.lbl_current_day)
+        day_layout.addWidget(self.btn_next_day)
+        day_layout.addWidget(self.btn_select_day)
+        layout.addLayout(day_layout)
+
+        self.btn_prev_day.clicked.connect(self.go_prev_day)
+        self.btn_next_day.clicked.connect(self.go_next_day)
+        self.btn_select_day.clicked.connect(self.select_day_dialog)
+
+        # EnvironmentSwitcher
         self.env_switcher = EnvironmentSwitcher()
         self.env_switcher.environment_changed.connect(self._on_env_changed)
         layout.addWidget(self.env_switcher)
 
-        #--- Centre : zone de visualisation ---
+        # Visual area
         self.visual_area = QFrame()
         self.visual_area.setFrameShape(QFrame.StyledPanel)
         self.visual_area.setStyleSheet("background-color: white; border: 1px solid gray;")
         self.visual_area_layout = QVBoxLayout(self.visual_area)
         layout.addWidget(self.visual_area, stretch=1)
 
-        #--- Bas : Timeline ---
+        # Timeline
         self.timeline = TimelineWidget()
         layout.addWidget(self.timeline)
-        self.timeline.load_events([
-            {"name": "Event 1", "start_hour": 9, "duration_hour": 2},
-            {"name": "Event 2", "start_hour": 12, "duration_hour": 1},
-            {"name": "Event 3", "start_hour": 15, "duration_hour": 3},
-        ])
 
-        #--- Ajout d'objets ---
+        # Bouton pour gérer les intentions et créer événements
+        self.btn_manage_intentions = QPushButton("Gérer les intentions / Créer événement")
+        layout.addWidget(self.btn_manage_intentions)
+        self.btn_manage_intentions.clicked.connect(self.open_intention_manager)
+
+        # Objets exemples
         self.add_object("Chaise", 100, 60)
         self.add_object("Table", 120, 70)
         self.add_object("Ordinateur", 80, 50)
 
+    # --- Navigation jour ---
+    def go_prev_day(self):
+        self.current_day -= timedelta(days=1)
+        self.lbl_current_day.setText(self.current_day.strftime("%Y-%m-%d"))
+        self.refresh_events()
 
-    def _load_environment(self, env_name):
-        self.current_environment = env_name
+    def go_next_day(self):
+        self.current_day += timedelta(days=1)
+        self.lbl_current_day.setText(self.current_day.strftime("%Y-%m-%d"))
+        self.refresh_events()
 
-        #Nettoyage des anciens objets
-        for obj in self.objects:
-            obj.setParent(None)
-        self.objects.clear()
+    def select_day_dialog(self):
+        dialog = QDialog(self)
+        dialog.setWindowTitle("Choisir un jour")
+        layout = QVBoxLayout(dialog)
+        calendar = QCalendarWidget()
+        calendar.setSelectedDate(self.current_day)
+        layout.addWidget(calendar)
+        btn_ok = QPushButton("Valider")
+        layout.addWidget(btn_ok)
 
-        #Réajouter objets exemples
-        self.add_object("Chaise", 100, 60)
-        self.add_object("Table", 120, 70)
-        self.add_object("Ordinateur", 80, 50)
+        def on_ok():
+            self.current_day = calendar.selectedDate().toPython()
+            self.lbl_current_day.setText(self.current_day.strftime("%Y-%m-%d"))
+            self.refresh_events()
+            dialog.accept()
 
+        btn_ok.clicked.connect(on_ok)
+        dialog.exec()
 
-    def add_object(self, name: str, width=80, height=50):
-        #Ajoute un objet dans la zone de visualisation
-        obj_widget = ObjectWidget(name, width, height)
-        self.visual_area_layout.addWidget(obj_widget)
-        self.objects.append(obj_widget)
+    # --- Objets et intentions ---
+    def add_object(self, name, width=80, height=50):
+        obj = ObjectWidget(name, width, height)
+        obj.clicked.connect(lambda n=name: self.create_intention(n))
+        self.visual_area_layout.addWidget(obj)
+        self.objects.append(obj)
 
+    def create_intention(self, object_name):
+        if not self.intention_service:
+            print(f"[DEBUG] Objet cliqué : {object_name} (aucun service)")
+            return
+        title, ok = QInputDialog.getText(self, "Nouvelle Intention", f"Titre pour {object_name} :")
+        if ok and title:
+            self.intention_service.create_intention(user_id="1", title=title, category="Physique")
+            print(f"Intention créée pour {object_name}: {title}")
 
+    def open_intention_manager(self):
+        if not self.intention_service:
+            return
+        dialog = IntentionManagerDialog(
+            parent=self,
+            intention_service=self.intention_service,
+            timeline_widget=self.timeline,
+            event_service=self.event_service
+        )
+        dialog.exec()
+
+    # --- EnvironmentSwitcher ---
     def _on_env_changed(self, env_name):
-        self._load_environment(env_name)
+        self.current_environment = env_name
+        self.refresh_events()
+
+    # --- Refresh events pour le jour courant et l'environnement courant ---
+    def refresh_events(self):
+        if not self.event_service:
+            self.timeline.load_events([])
+            return
+
+        start_day = datetime.combine(self.current_day, datetime.min.time())
+        end_day = datetime.combine(self.current_day, datetime.max.time())
+
+        events = self.event_service.get_events_between(self.current_environment, start_day, end_day)
+        ui_events = [{"name": getattr(ev, "intention_id", "Event"),
+                      "start_hour": ev.start_time.hour + ev.start_time.minute / 60,
+                      "duration_hour": ev.duration / 60} for ev in events]
+        self.timeline.load_events(ui_events)

@@ -1,4 +1,4 @@
-# ==================================== intention_service.py ====================================
+# ==================================== INLINE/src/application/services/intention_service.py ====================================
 
 # ============ Imports ============ 
 from domain.entities.intention import Intention
@@ -7,7 +7,7 @@ from factories.intention_factory import IntentionFactory
 from typing import Optional
 
 
-# ============ Notes ============  
+# ============ Class IntentionService ============  
 # Cette classe permet d'assurer la gestion des intentions, tels que la création, la mise à jour, l'activation et la désactivation.
 # Elle interagit avec la base de données (SQLiteIntentionRepository)  pour stocker et récupérer les données des intentions.
 
@@ -69,3 +69,8 @@ class IntentionService:
         intention.deactivate()
         self._intention_repository.save(intention)
         return self._intention_repository.get_by_id(intention_id)
+
+    #----------------------
+    
+    def get_all_intentions(self) -> list[Intention]:
+        return self._intention_repository.get_all()

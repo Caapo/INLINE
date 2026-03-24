@@ -1,4 +1,4 @@
-# ==================== sqlite_event_repository.py ====================
+# ==================== INLINE/src/infrastructure/repositories/sqlite/sqlite_event_repository.py ====================
 
 # ============ Imports ============
 import sqlite3

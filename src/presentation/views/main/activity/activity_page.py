@@ -1,4 +1,4 @@
-# ======= activity_page.py =======
+# ======= INLINE/src/presentation/views/main/activity/activity_page.py =======
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QLabel
 from PySide6.QtCore import Qt
 

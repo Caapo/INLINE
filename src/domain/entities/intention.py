@@ -1,4 +1,4 @@
-# ==================================== intention.py ====================================
+# ==================================== INLINE/src/domain/entities/intention.py ====================================
 
 # ============ Imports ============
 from datetime import datetime
@@ -7,7 +7,7 @@ from typing import Any
 import json
 
 
-# ============ Notes ============  
+# ============ Class Intention ============  
 # Cette classe permet de représenter une intention, en stockant des informations 
 # telles que le titre, la catégorie, le statut (active, inactive).
    
