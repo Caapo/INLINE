@@ -41,13 +41,19 @@ class ClickableObject(IInteractiveObject):
     def get_position(self) -> tuple[int,int]:
         return self.position
 
+    def get_type(self):
+        return "clickable"
+
     def get_info(self) -> dict:
         return {
-            "id": self.id,
-            "environment_id": self.environment_id,
-            "name": self.name,
-            "position": self.position,
-            "category": self.category.name,
-            "suggested_intentions": self.suggested_intentions,
-            "metadata": self.metadata
+            "type": "clickable",
+            "data": {
+                "id": self.id,
+                "environment_id": self.environment_id,
+                "name": self.name,
+                "position": self.position,
+                "category": self.category.name,
+                "suggested_intentions": self.suggested_intentions,
+                "metadata": self.metadata
+            }
         }

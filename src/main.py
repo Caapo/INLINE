@@ -1,4 +1,4 @@
-# ==================================== main.py ====================================
+# ==================== INLINE/src/main.py ==================
 
 # === Général ===
 from PySide6.QtWidgets import QApplication
@@ -22,12 +22,14 @@ from infrastructure.repositories.sqlite.sqlite_environment_repository import SQL
 from application.services.user_service import UserService
 from application.services.intention_service import IntentionService
 from application.services.event_service import EventService
-from application.services.environment_service import EnvironmentService
+from application.services.environment_service import EnvironmentService    
+from application.services.interactive_object_service import InteractiveObjectService
 
 # === Factories ===
 from factories.intention_factory import IntentionFactory
 from factories.event_factory import EventFactory
 from factories.environment_factory import EnvironmentFactory
+from factories.interactive_object_factory import InteractiveObjectFactory
 
 # === Queries ===
 from application.queries.event_query import EventQuery
@@ -77,6 +79,7 @@ from domain.enums.enums import EventStatus
 #     intention_service = IntentionService(intention_repo, intention_factory)
 #     event_service = EventService(event_repo, event_factory)
 #     environment_service = EnvironmentService(environment_repo, environment_factory)
+#     interactive_object_service = InteractiveObjectService(environment_repo, InteractiveObjectFactory())
     
 #     #Queries
 #     event_query = EventQuery(event_repo, intention_repo)
@@ -130,31 +133,80 @@ from domain.enums.enums import EventStatus
 #     # print(events)
 
 
-#     # ==== Test ClickableObject ====
-#     print("\n=== Test ClickableObject ===")
-#     print("Création d'un objet cliquable...")
-#     clickable_obj1 = ClickableObject(
-#         id="obj1",
+#     # # ==== Test ClickableObject ====
+#     # print("\n=== Test ClickableObject ===")
+#     # print("Création d'un objet cliquable...")
+#     # clickable_obj1 = ClickableObject(
+#     #     id="obj1",
+#     #     environment_id=environment.id,
+#     #     name="Objet1 test",
+#     #     position=(10, 20),
+#     #     category=ObjectCategory.PHYSIQUE,
+#     #     suggested_intentions=["Aller à la salle", "Manger sainement"]
+#     # )
+
+#     # environment.add_interactive_object(clickable_obj1)
+#     # print(f"Objet ajouté à l'environnement: {clickable_obj1.get_info()}\n")
+
+#     # #Interaction sans valeur (suggestions)
+#     # result_suggestions = clickable_obj1.interact(user_state=user)
+#     # print(f"Interaction sans input: {result_suggestions}\n")
+
+#     # #Interaction avec valeur personnalisée
+#     # result_custom = clickable_obj1.interact(user_state=user, input_value="Continuer le projet de génie log")
+#     # print(f"Interaction avec input personnalisé: {result_custom}\n")
+
+    
+#     # print(f"État de l'environnement: {environment.get_info()}\n")
+
+
+
+#     # ==== Test ClickableObject via Service ====
+#     print("\n=== Test ClickableObject via Service ===")
+
+#     # Création d'un objet cliquable via le service et la factory
+#     clickable_obj1 = interactive_object_service.create_object(
+#         type="clickable",
 #         environment_id=environment.id,
+#         id="obj1",
 #         name="Objet1 test",
 #         position=(10, 20),
 #         category=ObjectCategory.PHYSIQUE,
 #         suggested_intentions=["Aller à la salle", "Manger sainement"]
 #     )
 
-#     environment.add_interactive_object(clickable_obj1)
 #     print(f"Objet ajouté à l'environnement: {clickable_obj1.get_info()}\n")
 
-#     #Interaction sans valeur (suggestions)
-#     result_suggestions = clickable_obj1.interact(user_state=user)
+#     # Interaction sans valeur (suggestions)
+#     result_suggestions = interactive_object_service.interact_with_object(
+#         environment_id=environment.id,
+#         object_id="obj1",
+#         user_state=user
+#     )
 #     print(f"Interaction sans input: {result_suggestions}\n")
 
-#     #Interaction avec valeur personnalisée
-#     result_custom = clickable_obj1.interact(user_state=user, input_value="Continuer le projet de génie log")
+#     # Interaction avec valeur personnalisée
+#     result_custom = interactive_object_service.interact_with_object(
+#         environment_id=environment.id,
+#         object_id="obj1",
+#         user_state=user,
+#         input_value="Continuer le projet de génie log"
+#     )
 #     print(f"Interaction avec input personnalisé: {result_custom}\n")
 
-    
-#     print(f"État de l'environnement: {environment.get_info()}\n")
+#     # Vérification des objets via le service
+#     objects_in_env = interactive_object_service.get_objects_for_environment(environment.id)
+#     print("Objets présents dans l'environnement via le service:")
+#     for obj in objects_in_env:
+#         print(obj.get_info())
+#     print()
+
+#     # Affichage final de l'état complet de l'environnement
+#     print(f"État final de l'environnement: {environment.get_info()}\n")
+
+
+
+
 
 
 
@@ -193,40 +245,70 @@ from domain.enums.enums import EventStatus
 # =============== LANCEMENT DE L'APPLICATION (AVEC INTERFACE GRAPHIQUE) ==================
 
 
+
+# ======= INLINE/src/main.py =======
+
+import sys
+from pathlib import Path
+from PySide6.QtWidgets import QApplication
+
+# ===== UI =====
+from presentation.views.main.app import MainWindow
+
+# ===== Repositories =====
+from infrastructure.repositories.sqlite.sqlite_user_repository import SQLiteUserRepository
+from infrastructure.repositories.sqlite.sqlite_intention_repository import SQLiteIntentionRepository
+from infrastructure.repositories.sqlite.sqlite_event_repository import SQLiteEventRepository
+from infrastructure.repositories.sqlite.sqlite_environment_repository import SQLiteEnvironmentRepository
+
+# ===== Factories =====
+from factories.intention_factory import IntentionFactory
+from factories.event_factory import EventFactory
+from factories.environment_factory import EnvironmentFactory
+
+# ===== Services =====
+from application.services.user_service import UserService
+from application.services.intention_service import IntentionService
+from application.services.event_service import EventService
+from application.services.environment_service import EnvironmentService    
+
+
 def main():
     app = QApplication(sys.argv)
 
-    # DB PATH
+    # --- Chemin vers la DB ---
     base_dir = Path(__file__).resolve().parent.parent
     db_path = base_dir / "data" / "inline.db"
 
-    
-    # REPOSITORIES
+    # --- Repositories ---
     user_repo = SQLiteUserRepository(db_path)
     intention_repo = SQLiteIntentionRepository(db_path)
     event_repo = SQLiteEventRepository(db_path)
     environment_repo = SQLiteEnvironmentRepository(db_path)
 
-    # FACTORIES
+    # --- Factories ---
     intention_factory = IntentionFactory()
     event_factory = EventFactory()
     environment_factory = EnvironmentFactory()
 
-    # SERVICES
+    # --- Services ---
     user_service = UserService(user_repo)
     intention_service = IntentionService(intention_repo, intention_factory)
     event_service = EventService(event_repo, event_factory)
     environment_service = EnvironmentService(environment_repo, environment_factory)
 
-    # UI
+    # --- Fenêtre principale ---
     window = MainWindow(
         intention_service=intention_service,
         event_service=event_service,
         environment_service=environment_service
     )
 
+    # --- Lancement de l'app ---
     window.show()
     sys.exit(app.exec())
+
+
 
 
     

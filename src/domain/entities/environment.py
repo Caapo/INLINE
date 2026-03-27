@@ -5,6 +5,8 @@ from typing import List, Optional, Any
 from domain.entities.i_interactive_object import IInteractiveObject
 from datetime import datetime
 import json
+from factories.interactive_object_factory import InteractiveObjectFactory
+
 
 class Environment:
     def __init__(self, id:str, owner_id:str, name:str, objects:Optional[List[IInteractiveObject]]=None, metadata:Optional[dict[str, Any]]=None):
@@ -30,16 +32,40 @@ class Environment:
 
     #-----------------
 
+    # @classmethod
+    # def from_persistence(cls, id, owner_id, name, objects, metadata, created_at):
+    #     env = cls(
+    #         id=id,
+    #         owner_id=owner_id,
+    #         name=name,
+    #         objects=[],
+    #         metadata=metadata
+    #     )
+    #     env._created_at = created_at
+    #     return env
+
+
+
     @classmethod
     def from_persistence(cls, id, owner_id, name, objects, metadata, created_at):
+
+        reconstructed_objects = []
+
+        for obj_dict in objects:
+            reconstructed_objects.append(
+                InteractiveObjectFactory.from_dict(obj_dict)
+            )
+
         env = cls(
             id=id,
             owner_id=owner_id,
             name=name,
-            objects=[],
+            objects=reconstructed_objects,
             metadata=metadata
         )
-        env._created_at = created_at
+
+        env._created_at = datetime.fromisoformat(created_at)
+
         return env
 
     #------------------

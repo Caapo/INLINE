@@ -1,4 +1,4 @@
-# ==================== sqlite_environment_repository.py ====================
+# ==================== INLINE/src/infrastructure/repositories/sqlite/sqlite_environment_repository.py ====================
 import sqlite3
 import json
 from typing import List, Optional
@@ -52,6 +52,7 @@ class SQLiteEnvironmentRepository(IEnvironmentRepository):
             objects=json.loads(row["objects"]) if row["objects"] else [],
             metadata=json.loads(row["metadata"]) if row["metadata"] else {},
             created_at=row["created_at"]
+            
         )
 
     # ------------------

@@ -1,4 +1,4 @@
-# ======== i_interactive_object.py =========
+# ======== INLINE/src/domain/entities/i_interactive_object.py =========
 
 from abc import ABC, abstractmethod
 from typing import Any, Optional
@@ -19,4 +19,8 @@ class IInteractiveObject(ABC):
 
     @abstractmethod
     def get_info(self) -> dict:
+        pass
+
+    @abstractmethod
+    def get_type(self) -> str:
         pass
