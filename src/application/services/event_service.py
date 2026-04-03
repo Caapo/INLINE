@@ -73,3 +73,10 @@ class EventService(Observable):
         self._event_repository.save(event)
         self.notify("event_updated", event)
         return self._event_repository.get_by_id(event_id)
+
+    #----------------------
+
+    def delete_event(self, event_id: str) -> None:
+        event = self._get_event_or_raise(event_id)
+        self._event_repository.delete(event_id)
+        self.notify("event_deleted", event_id)

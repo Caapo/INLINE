@@ -30,3 +30,7 @@ class IIntentionRepository(ABC):
     @abstractmethod
     def get_all(self) -> List[Intention]:
         pass
+
+    @abstractmethod
+    def delete(self, intention_id:str) -> None:
+        pass

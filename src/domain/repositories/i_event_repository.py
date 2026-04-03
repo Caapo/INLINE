@@ -35,3 +35,7 @@ class IEventRepository(ABC):
     @abstractmethod
     def get_between(self, environment_id:str, start:datetime, end:datetime) -> List[Event]:
         pass
+    
+    @abstractmethod
+    def delete(self, event_id:str) -> None:
+        pass

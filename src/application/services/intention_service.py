@@ -81,3 +81,10 @@ class IntentionService(Observable):
     def get_intentions_map(self) -> dict:
         intentions = self._intention_repository.get_all()
         return {i.id: i for i in intentions}
+
+    #----------------------
+
+    def delete_intention(self, intention_id: str) -> None:
+        intention = self._get_intention_or_raise(intention_id)
+        self._intention_repository.delete(intention_id)
+        self.notify("intention_deleted", intention_id)

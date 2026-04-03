@@ -128,3 +128,10 @@ class SQLiteEventRepository(IEventRepository):
         """, (environment_id, start.isoformat(), end.isoformat()))
         rows = cursor.fetchall()
         return sorted([self._row_to_event(row) for row in rows], key=lambda e:e.start_time)
+
+    #------------------
+
+    def delete(self, event_id: str) -> None:
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM events WHERE id = ?", (event_id,))
+        self.connection.commit()

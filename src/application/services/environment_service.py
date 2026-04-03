@@ -39,3 +39,23 @@ class EnvironmentService(Observable):
 
     def list_all_environments(self) -> List[Environment]:
         return self._environment_repository.list_all()
+
+    #----------------------
+
+    def rename_environment(self, env_id: str, new_name: str) -> Environment:
+        env = self._environment_repository.get_by_id(env_id)
+        if not env:
+            raise ValueError("Environnement introuvable.")
+        env._name = new_name
+        self._environment_repository.save(env)
+        self.notify("environment_renamed", {"env_id": env_id, "new_name": new_name})
+        return env
+
+    #----------------------
+
+    def delete_environment(self, env_id: str) -> None:
+        env = self._environment_repository.get_by_id(env_id)
+        if not env:
+            raise ValueError("Environnement introuvable.")
+        self._environment_repository.delete(env_id)
+        self.notify("environment_deleted", env_id)

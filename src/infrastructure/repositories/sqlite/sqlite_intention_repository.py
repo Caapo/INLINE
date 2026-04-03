@@ -134,3 +134,10 @@ class SQLiteIntentionRepository(IIntentionRepository):
         cursor.execute("SELECT * FROM intentions")
         rows = cursor.fetchall()
         return [self._row_to_intention(row) for row in rows]
+
+    #------------------
+
+    def delete(self, intention_id: str) -> None:
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM intentions WHERE id = ?", (intention_id,))
+        self.connection.commit()
