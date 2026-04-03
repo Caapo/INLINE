@@ -111,12 +111,13 @@ class ObjectWidget(QFrame):
 # TimelineWidget
 # -------------------------
 class TimelineWidget(QWidget):
-    event_clicked = Signal(str) 
+    event_clicked = Signal(str)
 
     def __init__(self, parent=None, hours_range=(0, 23)):
         super().__init__(parent)
-        self.hours_range = hours_range
-        self.events      = [] 
+        self.hours_range         = hours_range
+        self.events              = []
+        self.active_intention_id = None   # <-- nouveau
         self.setMinimumHeight(100)
         self.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         self.setMouseTracking(True)
@@ -125,11 +126,16 @@ class TimelineWidget(QWidget):
         self.events = events
         self.update()
 
+    def set_active_intention(self, intention_id):
+        """Appelé par VisualizationPage quand le focus change."""
+        self.active_intention_id = intention_id
+        self.update()
+
     def _event_rect(self, ev, hour_width, start):
         start_x = (ev["start_hour"] - start) * hour_width
-        w       = ev["duration_hour"] * hour_width
-        y       = 25 + ev.get("_row", 0) * 22
-        return int(start_x), int(y), int(w), 18
+        w       = max(ev["duration_hour"] * hour_width, 4)
+        y       = 25 + ev.get("_row", 0) * 28   # un peu plus d'espace pour le badge FOCUS
+        return int(start_x), int(y), int(w), 20
 
     def paintEvent(self, event):
         painter    = QPainter(self)
@@ -161,17 +167,35 @@ class TimelineWidget(QWidget):
         # Events
         for ev in self.events:
             x, y, w, h = self._event_rect(ev, hour_width, start)
-            color = {
-                "planned":   QColor(100, 150, 220),
-                "completed": QColor(80,  180, 120),
-                "cancelled": QColor(200, 100, 100),
-            }.get(ev.get("status", "planned"), QColor(150, 150, 150))
+            is_focus    = (
+                self.active_intention_id is not None
+                and ev.get("intention_id") == self.active_intention_id
+            )
 
-            painter.setBrush(color)
-            painter.setPen(QPen(color.darker(130)))
-            painter.drawRoundedRect(x, y, w, h, 4, 4)
-            painter.setPen(QPen(Qt.white))
-            painter.drawText(x + 4, y + 13, ev["name"])
+            if is_focus:
+                # Fond doré + bordure épaisse
+                painter.setBrush(QColor(255, 200, 50, 230))
+                painter.setPen(QPen(QColor(180, 130, 0), 2))
+                painter.drawRoundedRect(x, y - 4, w, h + 8, 5, 5)
+                # Badge ★ FOCUS
+                painter.setPen(QPen(QColor(120, 80, 0)))
+                small_font = painter.font()
+                small_font.setBold(True)
+                painter.setFont(small_font)
+                painter.drawText(x + 4, y + 8,  "★ FOCUS")
+                painter.drawText(x + 4, y + 20, ev["name"])
+            else:
+                color = {
+                    "planned":   QColor(100, 150, 220),
+                    "completed": QColor(80,  180, 120),
+                    "cancelled": QColor(200, 100, 100),
+                }.get(ev.get("status", "planned"), QColor(150, 150, 150))
+
+                painter.setBrush(color)
+                painter.setPen(QPen(color.darker(130)))
+                painter.drawRoundedRect(x, y, w, h, 4, 4)
+                painter.setPen(QPen(Qt.white))
+                painter.drawText(x + 4, y + 14, ev["name"])
 
     def mousePressEvent(self, event):
         if event.button() == Qt.LeftButton:
@@ -183,7 +207,6 @@ class TimelineWidget(QWidget):
                     self.event_clicked.emit(ev["id"])
                     return
         super().mousePressEvent(event)
-
 
 # -------------------------
 # EventDialog : menu contextuel d'un event
@@ -213,6 +236,10 @@ class EventDialog(QDialog):
             btn_complete.clicked.connect(self._complete)
             layout.addWidget(btn_complete)
 
+            btn_reschedule = QPushButton("🕐   Reprogrammer")
+            btn_reschedule.clicked.connect(self._reschedule)
+            layout.addWidget(btn_reschedule)
+
             btn_cancel = QPushButton("✕   Annuler l'événement")
             btn_cancel.clicked.connect(self._cancel)
             layout.addWidget(btn_cancel)
@@ -223,6 +250,37 @@ class EventDialog(QDialog):
 
     def _complete(self):
         self.event_service.complete_event(self.event_data["id"])
+        self.accept()
+
+    def _reschedule(self):
+        start_str = self.event_data.get("start_time", "08:00")
+        h, m      = map(int, start_str.split(":"))
+        current_hour_float = h + m / 60.0
+
+        new_hour, ok1 = QInputDialog.getDouble(
+            self, "Reprogrammer", "Nouvelle heure de début :",
+            current_hour_float, 0.0, 23.99, 2
+        )
+        new_duration, ok2 = QInputDialog.getInt(
+            self, "Reprogrammer", "Nouvelle durée (minutes) :",
+            self.event_data.get("duration", 60), 1, 1440
+        )
+        if not (ok1 and ok2):
+            return
+
+        original_dt = datetime.fromisoformat(self.event_data["start_time_full"])
+        new_start   = original_dt.replace(
+            hour=int(new_hour),
+            minute=int((new_hour % 1) * 60),
+            second=0,
+            microsecond=0
+        )
+
+        self.event_service.update_event_time(
+            event_id=self.event_data["id"],
+            start_time=new_start,
+            duration=new_duration
+        )
         self.accept()
 
     def _cancel(self):
@@ -253,9 +311,21 @@ class IntentionManagerDialog(QDialog):
         self.current_day       = current_day or datetime.utcnow().date()
 
         self.setWindowTitle("Gestion des intentions")
-        self.resize(480, 400)
+        self.resize(480, 420)
 
         layout = QVBoxLayout(self)
+
+        # Label focus actuel
+        self.lbl_active = QLabel("★ Focus actuel : aucun")
+        self.lbl_active.setStyleSheet("""
+            background: #fffbe6;
+            border: 1px solid #f0c040;
+            border-radius: 4px;
+            padding: 6px;
+            font-weight: bold;
+            color: #7a5c00;
+        """)
+        layout.addWidget(self.lbl_active)
 
         layout.addWidget(QLabel("<b>Intentions</b>"))
         self.list_widget = QListWidget()
@@ -263,12 +333,14 @@ class IntentionManagerDialog(QDialog):
 
         # Boutons intentions
         btn_layout = QHBoxLayout()
-        self.btn_create_intention = QPushButton("+ Créer une intention")
-        self.btn_rename_intention = QPushButton("✎ Renommer")
-        self.btn_delete_intention = QPushButton("✕ Supprimer")
+        self.btn_create_intention    = QPushButton("+ Créer")
+        self.btn_rename_intention    = QPushButton("✎ Renommer")
+        self.btn_delete_intention    = QPushButton("✕ Supprimer")
+        self.btn_toggle_focus        = QPushButton("★ Définir focus")
         btn_layout.addWidget(self.btn_create_intention)
         btn_layout.addWidget(self.btn_rename_intention)
         btn_layout.addWidget(self.btn_delete_intention)
+        btn_layout.addWidget(self.btn_toggle_focus)
         layout.addLayout(btn_layout)
 
         layout.addWidget(QLabel(""))
@@ -278,6 +350,7 @@ class IntentionManagerDialog(QDialog):
         self.btn_create_intention.clicked.connect(self._create_intention)
         self.btn_rename_intention.clicked.connect(self._rename_intention)
         self.btn_delete_intention.clicked.connect(self._delete_intention)
+        self.btn_toggle_focus.clicked.connect(self._toggle_focus)
         self.btn_create_event.clicked.connect(self._create_event)
 
         self._load_intentions()
@@ -286,10 +359,37 @@ class IntentionManagerDialog(QDialog):
         self.list_widget.clear()
         if not self.intention_service:
             return
+
+        active_found = None
         for i in self.intention_service.get_all_intentions():
-            item = QListWidgetItem(f"{i.title}")
+            if i.is_active:
+                item = QListWidgetItem(f"★  {i.title}  [FOCUS]")
+                item.setForeground(QColor(180, 130, 0))
+                item.setBackground(QColor(255, 250, 220))
+                active_found = i.title
+            else:
+                item = QListWidgetItem(f"   {i.title}")
             item.setData(Qt.UserRole, i.id)
+            item.setData(Qt.UserRole + 1, i.is_active)
             self.list_widget.addItem(item)
+
+        if active_found:
+            self.lbl_active.setText(f"★ Focus actuel : {active_found}")
+        else:
+            self.lbl_active.setText("★ Focus actuel : aucun")
+
+        self._update_focus_button()
+
+    def _update_focus_button(self):
+        item = self.list_widget.currentItem()
+        if not item:
+            self.btn_toggle_focus.setText("★ Définir focus")
+            return
+        is_active = item.data(Qt.UserRole + 1)
+        if is_active:
+            self.btn_toggle_focus.setText("☆ Retirer le focus")
+        else:
+            self.btn_toggle_focus.setText("★ Définir comme focus")
 
     def _selected_id(self):
         item = self.list_widget.currentItem()
@@ -297,7 +397,9 @@ class IntentionManagerDialog(QDialog):
 
     def _selected_title(self):
         item = self.list_widget.currentItem()
-        return item.text() if item else None
+        if not item:
+            return None
+        return item.text().strip().replace("★  ", "").replace("  [FOCUS]", "").strip()
 
     def _create_intention(self):
         title, ok = QInputDialog.getText(self, "Nouvelle intention", "Titre :")
@@ -328,6 +430,24 @@ class IntentionManagerDialog(QDialog):
         if confirm == QMessageBox.Yes:
             self.intention_service.delete_intention(intention_id)
             self._load_intentions()
+
+    def _toggle_focus(self):
+        intention_id = self._selected_id()
+        if not intention_id:
+            return
+        item      = self.list_widget.currentItem()
+        is_active = item.data(Qt.UserRole + 1)
+
+        if is_active:
+            self.intention_service.deactivate_intention(intention_id)
+        else:
+            self.intention_service.activate_intention(intention_id)
+
+        self._load_intentions()
+
+        # Notifie la VisualizationPage pour mettre à jour la timeline
+        if self.parent():
+            self.parent()._refresh_focus()
 
     def _create_event(self):
         intention_id = self._selected_id()
@@ -361,6 +481,7 @@ class IntentionManagerDialog(QDialog):
                 start_time=start_time,
                 duration=duration_minutes
             )
+
 
 
 # -------------------------
@@ -423,6 +544,8 @@ class VisualizationPage(QWidget):
 
     def _on_intention_changed(self, payload):
         self._refresh_intention_count()
+        self._refresh_focus()
+        
 
     def _on_environment_changed(self, payload):
         self._update_env_label()
@@ -466,6 +589,7 @@ class VisualizationPage(QWidget):
         self.environments   = []
         self._load_environments_from_db()
         self.refresh_events()
+        self._refresh_focus()
 
     # -------------------------------------------------------
     # UI
@@ -530,6 +654,18 @@ class VisualizationPage(QWidget):
         self.lbl_intention_count = QLabel("Intentions : 0")
         self.lbl_intention_count.setAlignment(Qt.AlignCenter)
         layout.addWidget(self.lbl_intention_count)
+
+        self.lbl_focus = QLabel("★ Focus : aucun")
+        self.lbl_focus.setAlignment(Qt.AlignCenter)
+        self.lbl_focus.setStyleSheet("""
+            background: #fffbe6;
+            border: 1px solid #f0c040;
+            border-radius: 4px;
+            padding: 4px 10px;
+            font-weight: bold;
+            color: #7a5c00;
+        """)
+        layout.addWidget(self.lbl_focus)
 
         # Boutons
         self.btn_manage_intentions = QPushButton("Gérer les intentions / Créer événement")
@@ -784,6 +920,32 @@ class VisualizationPage(QWidget):
         )
         dialog.exec()
 
+    def _refresh_focus(self):
+        if not self.intention_service:
+            return
+        active = self.intention_service.get_active_intention_by_user("1")
+        if active:
+            self.timeline.set_active_intention(active.id)
+            self.lbl_focus.setText(f"★ Focus : {active.title}")
+            self.lbl_focus.setStyleSheet("""
+                background: #fffbe6;
+                border: 1px solid #f0c040;
+                border-radius: 4px;
+                padding: 4px 10px;
+                font-weight: bold;
+                color: #7a5c00;
+            """)
+        else:
+            self.timeline.set_active_intention(None)
+            self.lbl_focus.setText("★ Focus : aucun")
+            self.lbl_focus.setStyleSheet("""
+                background: #f0f0f0;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                padding: 4px 10px;
+                color: #999;
+            """)
+
     # -------------------------------------------------------
     # Refresh events
     # -------------------------------------------------------
@@ -791,6 +953,7 @@ class VisualizationPage(QWidget):
         env_id = self.current_environment_id
         if not env_id or not self.event_service or not self.intention_service:
             self.timeline.load_events([])
+            self._refresh_focus()
             return
 
         start_day = datetime.combine(self.current_day, datetime.min.time())
@@ -804,13 +967,16 @@ class VisualizationPage(QWidget):
             intention = intentions_map.get(ev.intention_id)
             ui_events.append({
                 "id":            ev.id,
+                "intention_id":  ev.intention_id,
                 "name":          intention.title if intention else "Unknown",
                 "start_hour":    ev.start_time.hour + ev.start_time.minute / 60,
                 "duration_hour": ev.duration / 60,
                 "start_time":    ev.start_time.strftime("%H:%M"),
+                "start_time_full": ev.start_time.isoformat(), 
                 "duration":      ev.duration,
                 "status":        ev.status,
             })
 
         self._current_events_data = ui_events
         self.timeline.load_events(ui_events)
+        self._refresh_focus()
