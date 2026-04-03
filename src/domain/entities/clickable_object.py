@@ -31,18 +31,32 @@ class ClickableObject(IInteractiveObject):
 
     # --------------
 
-    
+    def rename(self, new_name: str):
+        if not new_name:
+            raise ValueError("Le nom ne peut pas être vide.")
+        self.name = new_name
+
+    # --------------
+
+    def set_category(self, category: ObjectCategory):
+        self.category = category
 
     # --------------
     
     def get_metadata(self) -> dict:
         return self.metadata
+    
+    #----------------------
 
     def get_position(self) -> tuple[int,int]:
         return self.position
 
+    #----------------------
+
     def get_type(self):
         return "clickable"
+
+    #----------------------
 
     def get_info(self) -> dict:
         return {

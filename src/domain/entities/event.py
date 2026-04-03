@@ -60,8 +60,6 @@ class Event:
     def update_time(self, start_time:datetime, duration:int):
         if self._status != EventStatus.PLANNED:
             raise ValueError("Seuls les événements planifiés peuvent être modifiés.")
-        if start_time < datetime.utcnow():
-            raise ValueError("L'heure de début doit être dans le futur.")
         if duration <= 0:
             raise ValueError("La durée doit être un entier strictement positif.")
 
@@ -107,7 +105,7 @@ class Event:
         )
 
     # ----------------------
-    #Pour l'UI
+
     @property
     def id(self):
         return self._id
