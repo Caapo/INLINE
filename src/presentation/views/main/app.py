@@ -15,13 +15,14 @@ from presentation.views.main.activity.activity_page import ActivityPage
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, intention_service, event_service, environment_service, parent=None):
+    def __init__(self, intention_service, event_service, environment_service, interactive_object_service, parent=None):
         super().__init__(parent)
 
         #Initialisation des services
         self.intention_service = intention_service
         self.event_service = event_service
         self.environment_service = environment_service
+        self.interactive_object_service = interactive_object_service
 
         #Initialisation de l'UI et du style
         self._load_ui()
@@ -73,7 +74,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
         #Construction des pages avec les services associés
         self.home_page = HomePage()
-        self.visualization_page = VisualizationPage(intention_service=self.intention_service, event_service=self.event_service, environment_service=self.environment_service)
+        self.visualization_page = VisualizationPage(intention_service=self.intention_service, event_service=self.event_service, environment_service=self.environment_service, 
+        interactive_object_service=self.interactive_object_service)
         self.notes_page = NotesPage()
         self.modules_page = ModulesPage()
         self.activity_page = ActivityPage()

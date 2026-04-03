@@ -1,4 +1,4 @@
-# ======== clickable_object.py =========
+# ======== INLINE/src/domain/entities/clickable_object.py =========
 from domain.entities.i_interactive_object import IInteractiveObject
 from domain.enums.enums import ObjectCategory
 from typing import List, Optional

@@ -1,4 +1,4 @@
-# =========== EventQueryService ============
+# =========== INLINE/src/application/queries/event_query.py ============
 
 # =========== Imports ============
 from datetime import date

@@ -1,4 +1,4 @@
-# ========= timeline_query.py =========
+# ========= INLINE/src/application/queries/timeline_query.py =========
 
 # ======== Imports ========
 from datetime import datetime, date

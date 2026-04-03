@@ -51,3 +51,13 @@ class InteractiveObjectService:
         if not obj:
             raise ValueError(f"Object {object_id} not found in environment {environment_id}")
         return obj.interact(user_state, input_value)
+
+    def update_object_position(self, environment_id: str, object_id: str, position: tuple[int, int]):
+        env = self.environment_repo.get_by_id(environment_id)
+        if not env:
+            return
+        obj = env.get_interactive_object(object_id)
+        if not obj:
+            return
+        obj.position = position
+        self.environment_repo.save(env)

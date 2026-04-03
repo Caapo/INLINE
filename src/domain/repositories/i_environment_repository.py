@@ -22,3 +22,7 @@ class IEnvironmentRepository(ABC):
     @abstractmethod
     def list_all(self) -> List[Environment]:
         pass
+
+    @abstractmethod
+    def delete(self, env_id:str) -> None:
+        pass

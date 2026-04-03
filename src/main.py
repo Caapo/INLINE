@@ -271,6 +271,7 @@ from application.services.user_service import UserService
 from application.services.intention_service import IntentionService
 from application.services.event_service import EventService
 from application.services.environment_service import EnvironmentService    
+from application.services.interactive_object_service import InteractiveObjectService
 
 
 def main():
@@ -296,12 +297,13 @@ def main():
     intention_service = IntentionService(intention_repo, intention_factory)
     event_service = EventService(event_repo, event_factory)
     environment_service = EnvironmentService(environment_repo, environment_factory)
-
+    interactive_object_service = InteractiveObjectService(environment_repo, InteractiveObjectFactory())
     # --- Fenêtre principale ---
     window = MainWindow(
         intention_service=intention_service,
         event_service=event_service,
-        environment_service=environment_service
+        environment_service=environment_service,
+        interactive_object_service=interactive_object_service
     )
 
     # --- Lancement de l'app ---

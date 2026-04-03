@@ -75,3 +75,9 @@ class SQLiteEnvironmentRepository(IEnvironmentRepository):
         cursor.execute("SELECT * FROM environments")
         rows = cursor.fetchall()
         return [self._row_to_environment(row) for row in rows]
+
+    #------------------
+    def delete(self, env_id:str) -> None:
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM environments WHERE id = ?", (env_id,))
+        self.connection.commit()

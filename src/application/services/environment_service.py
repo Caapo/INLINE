@@ -25,3 +25,8 @@ class EnvironmentService:
 
     def list_all_environments(self) -> List[Environment]:
         return self._environment_repository.list_all()
+
+    def delete_environment(self, env_id:str) -> None:
+        env = self._environment_repository.get_by_id(env_id)
+        if env:
+            self._environment_repository.delete(env_id)

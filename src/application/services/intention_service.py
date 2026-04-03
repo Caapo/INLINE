@@ -74,3 +74,9 @@ class IntentionService:
     
     def get_all_intentions(self) -> list[Intention]:
         return self._intention_repository.get_all()
+
+    #----------------------
+
+    def get_intentions_map(self) -> dict:
+        intentions = self._intention_repository.get_all()
+        return {i.id: i for i in intentions}
