@@ -817,18 +817,6 @@ class VisualizationPage(QWidget):
         self.objects_by_env.setdefault(env.id, []).append(w)
         self._refresh_visual_area()
 
-    # def _refresh_visual_area(self):
-    #     for widgets in self.objects_by_env.values():
-    #         for w in widgets:
-    #             w.setParent(None)
-    #     env_id = self.current_environment_id
-    #     if not env_id:
-    #         return
-    #     for w in self.objects_by_env.get(env_id, []):
-    #         w.setParent(self.visual_area)
-    #         x, y = getattr(w, 'position', (10, 10))
-    #         w.move(x, y)
-    #         w.show()
 
     def _refresh_visual_area(self):
         for widgets in self.objects_by_env.values():
