@@ -246,73 +246,148 @@ from domain.enums.enums import EventStatus
 
 
 
-# ======= INLINE/src/main.py =======
+# # ======= INLINE/src/main.py =======
 
-import sys
-from pathlib import Path
-from PySide6.QtWidgets import QApplication
+# import sys
+# from pathlib import Path
+# from PySide6.QtWidgets import QApplication
 
-# ===== UI =====
-from presentation.views.main.app import MainWindow
+# # ===== UI =====
+# from presentation.views.main.app import MainWindow
 
-# ===== Repositories =====
-from infrastructure.repositories.sqlite.sqlite_user_repository import SQLiteUserRepository
-from infrastructure.repositories.sqlite.sqlite_intention_repository import SQLiteIntentionRepository
-from infrastructure.repositories.sqlite.sqlite_event_repository import SQLiteEventRepository
-from infrastructure.repositories.sqlite.sqlite_environment_repository import SQLiteEnvironmentRepository
+# # ===== Repositories =====
+# from infrastructure.repositories.sqlite.sqlite_user_repository import SQLiteUserRepository
+# from infrastructure.repositories.sqlite.sqlite_intention_repository import SQLiteIntentionRepository
+# from infrastructure.repositories.sqlite.sqlite_event_repository import SQLiteEventRepository
+# from infrastructure.repositories.sqlite.sqlite_environment_repository import SQLiteEnvironmentRepository
 
-# ===== Factories =====
-from factories.intention_factory import IntentionFactory
-from factories.event_factory import EventFactory
-from factories.environment_factory import EnvironmentFactory
+# # ===== Factories =====
+# from factories.intention_factory import IntentionFactory
+# from factories.event_factory import EventFactory
+# from factories.environment_factory import EnvironmentFactory
 
-# ===== Services =====
-from application.services.user_service import UserService
-from application.services.intention_service import IntentionService
-from application.services.event_service import EventService
-from application.services.environment_service import EnvironmentService    
-from application.services.interactive_object_service import InteractiveObjectService
+# # ===== Services =====
+# from application.services.user_service import UserService
+# from application.services.intention_service import IntentionService
+# from application.services.event_service import EventService
+# from application.services.environment_service import EnvironmentService    
+# from application.services.interactive_object_service import InteractiveObjectService
 
 
-def main():
-    app = QApplication(sys.argv)
+# def main():
+#     app = QApplication(sys.argv)
 
-    # --- Chemin vers la DB ---
-    base_dir = Path(__file__).resolve().parent.parent
-    db_path = base_dir / "data" / "inline.db"
+#     # --- Chemin vers la DB ---
+#     base_dir = Path(__file__).resolve().parent.parent
+#     db_path = base_dir / "data" / "inline.db"
 
-    # --- Repositories ---
-    user_repo = SQLiteUserRepository(db_path)
-    intention_repo = SQLiteIntentionRepository(db_path)
-    event_repo = SQLiteEventRepository(db_path)
-    environment_repo = SQLiteEnvironmentRepository(db_path)
+#     # --- Repositories ---
+#     user_repo = SQLiteUserRepository(db_path)
+#     intention_repo = SQLiteIntentionRepository(db_path)
+#     event_repo = SQLiteEventRepository(db_path)
+#     environment_repo = SQLiteEnvironmentRepository(db_path)
 
-    # --- Factories ---
-    intention_factory = IntentionFactory()
-    event_factory = EventFactory()
-    environment_factory = EnvironmentFactory()
+#     # --- Factories ---
+#     intention_factory = IntentionFactory()
+#     event_factory = EventFactory()
+#     environment_factory = EnvironmentFactory()
 
-    # --- Services ---
-    user_service = UserService(user_repo)
-    intention_service = IntentionService(intention_repo, intention_factory)
-    event_service = EventService(event_repo, event_factory)
-    environment_service = EnvironmentService(environment_repo, environment_factory)
-    interactive_object_service = InteractiveObjectService(environment_repo, InteractiveObjectFactory())
-    # --- Fenêtre principale ---
-    window = MainWindow(
-        intention_service=intention_service,
-        event_service=event_service,
-        environment_service=environment_service,
-        interactive_object_service=interactive_object_service
-    )
+#     # --- Services ---
+#     user_service = UserService(user_repo)
+#     intention_service = IntentionService(intention_repo, intention_factory)
+#     event_service = EventService(event_repo, event_factory)
+#     environment_service = EnvironmentService(environment_repo, environment_factory)
+#     interactive_object_service = InteractiveObjectService(environment_repo, InteractiveObjectFactory())
+#     # --- Fenêtre principale ---
+#     window = MainWindow(
+#         intention_service=intention_service,
+#         event_service=event_service,
+#         environment_service=environment_service,
+#         interactive_object_service=interactive_object_service
+#     )
 
-    # --- Lancement de l'app ---
-    window.show()
-    sys.exit(app.exec())
+#     # --- Lancement de l'app ---
+#     window.show()
+#     sys.exit(app.exec())
 
 
 
 
     
+# if __name__ == "__main__":
+#     main()
+
+
+# ======= INLINE/src/main.py =======
+import sys
+from pathlib import Path
+from PySide6.QtWidgets import QApplication
+
+from presentation.views.main.app import MainWindow
+
+from infrastructure.repositories.sqlite.sqlite_user_repository import SQLiteUserRepository
+from infrastructure.repositories.sqlite.sqlite_intention_repository import SQLiteIntentionRepository
+from infrastructure.repositories.sqlite.sqlite_event_repository import SQLiteEventRepository
+from infrastructure.repositories.sqlite.sqlite_environment_repository import SQLiteEnvironmentRepository
+from infrastructure.repositories.sqlite.sqlite_note_repository import SQLiteNoteRepository
+
+from factories.intention_factory import IntentionFactory
+from factories.event_factory import EventFactory
+from factories.environment_factory import EnvironmentFactory
+from factories.interactive_object_factory import InteractiveObjectFactory
+from factories.note_factory import NoteFactory
+
+from application.services.user_service import UserService
+from application.services.intention_service import IntentionService
+from application.services.event_service import EventService
+from application.services.environment_service import EnvironmentService
+from application.services.interactive_object_service import InteractiveObjectService
+from application.services.note_service import NoteService
+
+
+def main():
+    app = QApplication(sys.argv)
+
+    base_dir = Path(__file__).resolve().parent.parent
+    db_path  = base_dir / "data" / "inline.db"
+
+    # --- Repositories ---
+    user_repo        = SQLiteUserRepository(db_path)
+    intention_repo   = SQLiteIntentionRepository(db_path)
+    event_repo       = SQLiteEventRepository(db_path)
+    environment_repo = SQLiteEnvironmentRepository(db_path)
+    note_repo        = SQLiteNoteRepository(db_path)
+
+    # --- Factories ---
+    intention_factory = IntentionFactory()
+    event_factory     = EventFactory()
+    environment_factory = EnvironmentFactory()
+    note_factory      = NoteFactory()
+
+    # --- Services ---
+    user_service       = UserService(user_repo)
+    intention_service  = IntentionService(intention_repo, intention_factory)
+    event_service      = EventService(event_repo, event_factory)
+    environment_service = EnvironmentService(environment_repo, environment_factory)
+    interactive_object_service = InteractiveObjectService(environment_repo, InteractiveObjectFactory())
+    note_service       = NoteService(
+        note_repository=note_repo,
+        note_factory=note_factory,
+        intention_repository=intention_repo
+    )
+
+    # --- Fenêtre principale ---
+    window = MainWindow(
+        intention_service=intention_service,
+        event_service=event_service,
+        environment_service=environment_service,
+        interactive_object_service=interactive_object_service,
+        note_service=note_service
+    )
+
+    window.show()
+    sys.exit(app.exec())
+
+
 if __name__ == "__main__":
     main()

@@ -56,8 +56,9 @@ class ObjectWidget(QFrame):
         super().mousePressEvent(event)
 
     def mouseMoveEvent(self, event):
-        if self._drag_active:
+        if self._drag_active and self.parent():
             new_pos = self.mapToParent(event.position().toPoint() - self._drag_offset)
+            new_pos = self._clamp_to_parent(new_pos)
             self.move(new_pos)
             self.position = (new_pos.x(), new_pos.y())
         super().mouseMoveEvent(event)
@@ -73,6 +74,16 @@ class ObjectWidget(QFrame):
                 if self.obj_id:
                     self.moved.emit(self.obj_id, self.x(), self.y())
         super().mouseReleaseEvent(event)
+
+    def _clamp_to_parent(self, pos):
+        if not self.parent():
+            return pos
+        parent_rect = self.parent().rect()
+        x = max(0, min(pos.x(), parent_rect.width()  - self.width()))
+        y = max(0, min(pos.y(), parent_rect.height() - self.height()))
+        from PySide6.QtCore import QPoint
+        return QPoint(x, y)
+
 
     def _show_context_menu(self, global_pos):
         menu = QMenu(self)
@@ -806,16 +817,38 @@ class VisualizationPage(QWidget):
         self.objects_by_env.setdefault(env.id, []).append(w)
         self._refresh_visual_area()
 
+    # def _refresh_visual_area(self):
+    #     for widgets in self.objects_by_env.values():
+    #         for w in widgets:
+    #             w.setParent(None)
+    #     env_id = self.current_environment_id
+    #     if not env_id:
+    #         return
+    #     for w in self.objects_by_env.get(env_id, []):
+    #         w.setParent(self.visual_area)
+    #         x, y = getattr(w, 'position', (10, 10))
+    #         w.move(x, y)
+    #         w.show()
+
     def _refresh_visual_area(self):
         for widgets in self.objects_by_env.values():
             for w in widgets:
                 w.setParent(None)
+    
         env_id = self.current_environment_id
         if not env_id:
             return
+    
+        area_w = self.visual_area.width()
+        area_h = self.visual_area.height()
+    
         for w in self.objects_by_env.get(env_id, []):
             w.setParent(self.visual_area)
             x, y = getattr(w, 'position', (10, 10))
+            # Clampe au cas où la fenêtre est plus petite que la position sauvegardée
+            x = max(0, min(x, max(area_w - w.width(),  0)))
+            y = max(0, min(y, max(area_h - w.height(), 0)))
+            w.position = (x, y)
             w.move(x, y)
             w.show()
 
@@ -980,3 +1013,24 @@ class VisualizationPage(QWidget):
         self._current_events_data = ui_events
         self.timeline.load_events(ui_events)
         self._refresh_focus()
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self._clamp_all_objects()
+
+    def _clamp_all_objects(self):
+        area = self.visual_area
+        if not area:
+            return
+        area_w = area.width()
+        area_h = area.height()
+
+        for widgets in self.objects_by_env.values():
+            for w in widgets:
+                x, y = w.position
+                new_x = max(0, min(x, area_w - w.width()))
+                new_y = max(0, min(y, area_h - w.height()))
+                if (new_x, new_y) != (x, y):
+                    w.position = (new_x, new_y)
+                    if w.parent() == area:
+                        w.move(new_x, new_y)

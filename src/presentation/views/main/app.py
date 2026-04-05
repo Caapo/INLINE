@@ -15,31 +15,53 @@ from presentation.views.main.activity.activity_page import ActivityPage
 
 
 class MainWindow(QtWidgets.QMainWindow):
-    def __init__(self, intention_service, event_service, environment_service, interactive_object_service, parent=None):
+    # def __init__(self, intention_service, event_service, environment_service, interactive_object_service, parent=None):
+    #     super().__init__(parent)
+
+    #     #Initialisation des services
+    #     self.intention_service = intention_service
+    #     self.event_service = event_service
+    #     self.environment_service = environment_service
+    #     self.interactive_object_service = interactive_object_service
+
+    #     #Initialisation de l'UI et du style
+    #     self._load_ui()
+    #     self._apply_styles()
+
+    #     #Initialisation des pages et de la navigation
+    #     self._setup_pages()
+    #     self._setup_navigation()
+
+    #     #Cache la barre de navigation avec uniquement les icônes
+    #     icon_menu = self.ui.findChild(QtWidgets.QWidget, "iconOnlyMenu")
+    #     icon_menu.hide()
+
+    #     #Page d'accueil = page par défaut
+    #     self.switch_page(self.home_page)
+
+    #     #Affichage de la fenêtre
+    #     self.resize(1080, 651)
+    #     self.show()
+
+    def __init__(self, intention_service, event_service, environment_service,
+                 interactive_object_service, note_service, parent=None):
         super().__init__(parent)
 
-        #Initialisation des services
-        self.intention_service = intention_service
-        self.event_service = event_service
-        self.environment_service = environment_service
+        self.intention_service          = intention_service
+        self.event_service              = event_service
+        self.environment_service        = environment_service
         self.interactive_object_service = interactive_object_service
+        self.note_service               = note_service
 
-        #Initialisation de l'UI et du style
         self._load_ui()
         self._apply_styles()
-
-        #Initialisation des pages et de la navigation
         self._setup_pages()
         self._setup_navigation()
 
-        #Cache la barre de navigation avec uniquement les icônes
         icon_menu = self.ui.findChild(QtWidgets.QWidget, "iconOnlyMenu")
         icon_menu.hide()
 
-        #Page d'accueil = page par défaut
         self.switch_page(self.home_page)
-
-        #Affichage de la fenêtre
         self.resize(1080, 651)
         self.show()
 
@@ -70,26 +92,55 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.quitIconButton.clicked.connect(self.close)
 
     # -------------------------
-    def _setup_pages(self):
+    # def _setup_pages(self):
 
-        #Construction des pages avec les services associés
-        self.home_page = HomePage()
-        self.visualization_page = VisualizationPage(intention_service=self.intention_service, event_service=self.event_service, environment_service=self.environment_service, 
-        interactive_object_service=self.interactive_object_service)
-        self.notes_page = NotesPage()
+    #     #Construction des pages avec les services associés
+    #     self.home_page = HomePage()
+    #     self.visualization_page = VisualizationPage(intention_service=self.intention_service, event_service=self.event_service, environment_service=self.environment_service, 
+    #     interactive_object_service=self.interactive_object_service)
+    #     self.notes_page = NotesPage()
+    #     self.modules_page = ModulesPage()
+    #     self.activity_page = ActivityPage()
+        
+    #     #Mapping des pages avec les placeholders correspondants dans le .ui
+    #     self.pages = {
+    #         "home": ("homePage", self.home_page),
+    #         "visualization": ("visualizationPage", self.visualization_page),
+    #         "notes": ("notesPage", self.notes_page),
+    #         "modules": ("modulesPage", self.modules_page),
+    #         "activity": ("activityPage", self.activity_page),
+    #     }
+
+    #     #Remplacement des placeholders par les pages réelles
+    #     for key, (placeholder_name, page) in self.pages.items():
+    #         placeholder = self._get_widget(placeholder_name, QtWidgets.QWidget)
+    #         index = self.stacked_widget.indexOf(placeholder)
+    #         if index == -1:
+    #             raise RuntimeError(f"Placeholder introuvable: {placeholder_name}")
+    #         self.stacked_widget.removeWidget(placeholder)
+    #         self.stacked_widget.insertWidget(index, page)
+
+    def _setup_pages(self):
+        self.home_page          = HomePage()
+        self.visualization_page = VisualizationPage(
+            intention_service=self.intention_service,
+            event_service=self.event_service,
+            environment_service=self.environment_service,
+            interactive_object_service=self.interactive_object_service
+        )
+        self.notes_page   = NotesPage(note_service=self.note_service,
+                                      intention_service=self.intention_service)
         self.modules_page = ModulesPage()
         self.activity_page = ActivityPage()
-        
-        #Mapping des pages avec les placeholders correspondants dans le .ui
+
         self.pages = {
-            "home": ("homePage", self.home_page),
+            "home":          ("homePage",          self.home_page),
             "visualization": ("visualizationPage", self.visualization_page),
-            "notes": ("notesPage", self.notes_page),
-            "modules": ("modulesPage", self.modules_page),
-            "activity": ("activityPage", self.activity_page),
+            "notes":         ("notesPage",         self.notes_page),
+            "modules":       ("modulesPage",       self.modules_page),
+            "activity":      ("activityPage",      self.activity_page),
         }
 
-        #Remplacement des placeholders par les pages réelles
         for key, (placeholder_name, page) in self.pages.items():
             placeholder = self._get_widget(placeholder_name, QtWidgets.QWidget)
             index = self.stacked_widget.indexOf(placeholder)

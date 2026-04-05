@@ -1,3 +1,5 @@
+# ========= INLINE/src/domain/enums/enums.py =========
+
 from enum import Enum
 
 class ObjectCategory(Enum):
@@ -9,3 +11,11 @@ class EventStatus(Enum):
     PLANNED = "planned"
     COMPLETED = "completed"
     CANCELLED = "cancelled"
+
+
+
+class BlockType(Enum):
+    TITLE     = "title"
+    TEXT      = "text"
+    CHECKLIST = "checklist"
+    TABLE     = "table"
