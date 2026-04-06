@@ -215,7 +215,7 @@ class NoteEditor(QWidget):
         # Header : titre + intention liée
         header = QHBoxLayout()
         self.lbl_title = QLabel("Sélectionnez une note")
-        self.lbl_title.setStyleSheet("font-size: 18px; font-weight: bold; color: #eee;")
+        # self.lbl_title.setStyleSheet("font-size: 18px; font-weight: bold; color: #eee;")
         self.btn_rename = QPushButton("✎")
         self.btn_rename.setFixedSize(28, 28)
         self.btn_rename.setToolTip("Renommer la note")
@@ -229,19 +229,19 @@ class NoteEditor(QWidget):
         # Intention liée
         intention_row = QHBoxLayout()
         self.lbl_intention = QLabel("Intention liée : aucune")
-        self.lbl_intention.setStyleSheet("color: #aaa; font-size: 11px;")
+        # self.lbl_intention.setStyleSheet("color: #aaa; font-size: 11px;")
         self.btn_link   = QPushButton("🔗 Lier à une intention")
         self.btn_unlink = QPushButton("✕ Délier")
-        self.btn_link.setStyleSheet("""
-            QPushButton { background: #2a2a3e; color: #4A90D9;
-                          border: 1px solid #4A90D9; border-radius: 4px; padding: 2px 8px; }
-            QPushButton:hover { background: #3a3a5c; }
-        """)
-        self.btn_unlink.setStyleSheet("""
-            QPushButton { background: #2a2a3e; color: #cc4444;
-                          border: 1px solid #cc4444; border-radius: 4px; padding: 2px 8px; }
-            QPushButton:hover { background: #3a2020; }
-        """)
+        # self.btn_link.setStyleSheet("""
+        #     QPushButton { background: #2a2a3e; color: #4A90D9;
+        #                   border: 1px solid #4A90D9; border-radius: 4px; padding: 2px 8px; }
+        #     QPushButton:hover { background: #3a3a5c; }
+        # """)
+        # self.btn_unlink.setStyleSheet("""
+        #     QPushButton { background: #2a2a3e; color: #cc4444;
+        #                   border: 1px solid #cc4444; border-radius: 4px; padding: 2px 8px; }
+        #     QPushButton:hover { background: #3a2020; }
+        # """)
         self.btn_link.clicked.connect(self._link_intention)
         self.btn_unlink.clicked.connect(self._unlink_intention)
         intention_row.addWidget(self.lbl_intention)
@@ -253,13 +253,13 @@ class NoteEditor(QWidget):
         # Séparateur
         sep = QFrame()
         sep.setFrameShape(QFrame.HLine)
-        sep.setStyleSheet("color: #444;")
+        # sep.setStyleSheet("color: #444;")
         layout.addWidget(sep)
 
         # Zone scrollable des blocs
         self.scroll = QScrollArea()
         self.scroll.setWidgetResizable(True)
-        self.scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
+        # self.scroll.setStyleSheet("QScrollArea { border: none; background: transparent; }")
         self.blocks_container = QWidget()
         self.blocks_layout    = QVBoxLayout(self.blocks_container)
         self.blocks_layout.setSpacing(8)
@@ -270,7 +270,7 @@ class NoteEditor(QWidget):
         # Barre d'ajout de blocs
         add_bar = QHBoxLayout()
         lbl = QLabel("Ajouter :")
-        lbl.setStyleSheet("color: #aaa;")
+        # lbl.setStyleSheet("color: #aaa;")
         add_bar.addWidget(lbl)
 
         for label, btype in [
@@ -293,11 +293,11 @@ class NoteEditor(QWidget):
 
         # Bouton sauvegarde
         self.btn_save = QPushButton("💾  Sauvegarder")
-        self.btn_save.setStyleSheet("""
-            QPushButton { background: #4A90D9; color: white; font-weight: bold;
-                          border-radius: 6px; padding: 8px; }
-            QPushButton:hover { background: #357abd; }
-        """)
+        # self.btn_save.setStyleSheet("""
+        #     QPushButton { background: #4A90D9; color: white; font-weight: bold;
+        #                   border-radius: 6px; padding: 8px; }
+        #     QPushButton:hover { background: #357abd; }
+        # """)
         self.btn_save.clicked.connect(self._save_note)
         layout.addWidget(self.btn_save)
 
@@ -352,14 +352,14 @@ class NoteEditor(QWidget):
             BlockType.TABLE.value:     "📊 Tableau",
         }
         lbl_type = QLabel(type_icons.get(block_type, block_type))
-        lbl_type.setStyleSheet("color: #888; font-size: 10px;")
+        # lbl_type.setStyleSheet("color: #888; font-size: 10px;")
 
         btn_up  = QPushButton("▲")
         btn_dn  = QPushButton("▼")
         btn_del = QPushButton("✕")
         for b in [btn_up, btn_dn, btn_del]:
             b.setFixedSize(22, 22)
-            b.setStyleSheet("background: #1e1e2e; color: #ccc; border-radius: 3px; font-size: 10px;")
+            # b.setStyleSheet("background: #1e1e2e; color: #ccc; border-radius: 3px; font-size: 10px;")
 
         btn_del.setStyleSheet("background: #1e1e2e; color: #cc4444; border-radius: 3px; font-size: 10px;")
 
@@ -382,7 +382,7 @@ class NoteEditor(QWidget):
             return
 
         block_widget = WidgetClass(block_id=block_id, data=data)
-        block_widget.setStyleSheet("QFrame { border: none; background: transparent; }")
+        # block_widget.setStyleSheet("QFrame { border: none; background: transparent; }")
         c_layout.addWidget(block_widget)
 
         self._block_widgets.append((block_id, block_widget, container))
@@ -496,7 +496,7 @@ class NotesPage(QWidget):
         self._load_notes()
 
     def _init_ui(self):
-        self.setStyleSheet("background-color: #13131f;")
+        # self.setStyleSheet("background-color: #13131f;")
         main_layout = QHBoxLayout(self)
         main_layout.setContentsMargins(0, 0, 0, 0)
         main_layout.setSpacing(0)
@@ -504,26 +504,26 @@ class NotesPage(QWidget):
         # ---- Panneau gauche : liste des notes ----
         left_panel = QFrame()
         left_panel.setFixedWidth(260)
-        left_panel.setStyleSheet("""
-            QFrame { background: #1e1e2e; border-right: 1px solid #2a2a3e; }
-        """)
+        # left_panel.setStyleSheet("""
+        #     QFrame { background: #1e1e2e; border-right: 1px solid #2a2a3e; }
+        # """)
         left_layout = QVBoxLayout(left_panel)
         left_layout.setContentsMargins(12, 16, 12, 12)
         left_layout.setSpacing(8)
 
         # Titre panneau
         lbl_notes = QLabel("Notes")
-        lbl_notes.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
+        # lbl_notes.setStyleSheet("color: white; font-size: 16px; font-weight: bold;")
         left_layout.addWidget(lbl_notes)
 
         # Filtre par intention
         self.filter_combo = QComboBox()
-        self.filter_combo.setStyleSheet("""
-            QComboBox { background: #2a2a3e; color: #ccc; border: 1px solid #444;
-                        border-radius: 4px; padding: 4px; }
-            QComboBox::drop-down { border: none; }
-            QComboBox QAbstractItemView { background: #2a2a3e; color: white; }
-        """)
+        # self.filter_combo.setStyleSheet("""
+        #     QComboBox { background: #2a2a3e; color: #ccc; border: 1px solid #444;
+        #                 border-radius: 4px; padding: 4px; }
+        #     QComboBox::drop-down { border: none; }
+        #     QComboBox QAbstractItemView { background: #2a2a3e; color: white; }
+        # """)
         self.filter_combo.addItem("Toutes les notes", None)
         self.filter_combo.currentIndexChanged.connect(self._on_filter_changed)
         left_layout.addWidget(self.filter_combo)
@@ -531,40 +531,40 @@ class NotesPage(QWidget):
         # Barre de recherche
         self.search_bar = QLineEdit()
         self.search_bar.setPlaceholderText("🔍 Rechercher...")
-        self.search_bar.setStyleSheet("""
-            QLineEdit { background: #2a2a3e; color: white; border: 1px solid #444;
-                        border-radius: 4px; padding: 6px; }
-        """)
+        # self.search_bar.setStyleSheet("""
+        #     QLineEdit { background: #2a2a3e; color: white; border: 1px solid #444;
+        #                 border-radius: 4px; padding: 6px; }
+        # """)
         self.search_bar.textChanged.connect(self._on_search)
         left_layout.addWidget(self.search_bar)
 
         # Liste
         self.note_list = QListWidget()
-        self.note_list.setStyleSheet("""
-            QListWidget { background: transparent; border: none; color: white; }
-            QListWidget::item { padding: 10px 8px; border-radius: 6px; margin: 2px 0; }
-            QListWidget::item:selected { background: #3a3a5c; }
-            QListWidget::item:hover { background: #2a2a4a; }
-        """)
+        # self.note_list.setStyleSheet("""
+        #     QListWidget { background: transparent; border: none; color: white; }
+        #     QListWidget::item { padding: 10px 8px; border-radius: 6px; margin: 2px 0; }
+        #     QListWidget::item:selected { background: #3a3a5c; }
+        #     QListWidget::item:hover { background: #2a2a4a; }
+        # """)
         self.note_list.currentItemChanged.connect(self._on_note_selected)
         left_layout.addWidget(self.note_list, stretch=1)
 
         # Boutons bas du panneau
         btn_new = QPushButton("+ Nouvelle note")
-        btn_new.setStyleSheet("""
-            QPushButton { background: #4A90D9; color: white; font-weight: bold;
-                          border-radius: 6px; padding: 8px; }
-            QPushButton:hover { background: #357abd; }
-        """)
+        # btn_new.setStyleSheet("""
+        #     QPushButton { background: #4A90D9; color: white; font-weight: bold;
+        #                   border-radius: 6px; padding: 8px; }
+        #     QPushButton:hover { background: #357abd; }
+        # """)
         btn_new.clicked.connect(self._create_note)
         left_layout.addWidget(btn_new)
 
         btn_delete = QPushButton("🗑 Supprimer la note")
-        btn_delete.setStyleSheet("""
-            QPushButton { background: #2a2a3e; color: #cc4444;
-                          border: 1px solid #cc4444; border-radius: 6px; padding: 6px; }
-            QPushButton:hover { background: #3a2020; }
-        """)
+        # btn_delete.setStyleSheet("""
+        #     QPushButton { background: #2a2a3e; color: #cc4444;
+        #                   border: 1px solid #cc4444; border-radius: 6px; padding: 6px; }
+        #     QPushButton:hover { background: #3a2020; }
+        # """)
         btn_delete.clicked.connect(self._delete_note)
         left_layout.addWidget(btn_delete)
 
@@ -573,7 +573,7 @@ class NotesPage(QWidget):
             note_service=self.note_service,
             intention_service=self.intention_service
         )
-        self.editor.setStyleSheet("background: #13131f;")
+        # self.editor.setStyleSheet("background: #13131f;")
 
         # Splitter
         splitter = QSplitter(Qt.Horizontal)
@@ -582,7 +582,7 @@ class NotesPage(QWidget):
         splitter.setStretchFactor(0, 0)
         splitter.setStretchFactor(1, 1)
         splitter.setHandleWidth(1)
-        splitter.setStyleSheet("QSplitter::handle { background: #2a2a3e; }")
+        # splitter.setStyleSheet("QSplitter::handle { background: #2a2a3e; }")
 
         main_layout.addWidget(splitter)
 

@@ -93,8 +93,8 @@ class ModuleService(Observable):
             work_duration=work_duration,
             break_duration=break_duration,
             status=status,
-            started_at=started_at or datetime.utcnow(),
-            ended_at=ended_at or datetime.utcnow()
+            started_at=started_at or datetime.now(),
+            ended_at=ended_at or datetime.now()
         )
         self._session_repo.save(session)
         self.notify("session_recorded", session)

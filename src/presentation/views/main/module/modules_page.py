@@ -453,8 +453,8 @@ class ModuleDetailPanel(QWidget):
             work_duration=work_duration,
             break_duration=break_duration,
             status=status,
-            started_at=self._started_at or datetime.utcnow(),
-            ended_at=datetime.utcnow()
+            started_at=self._started_at or datetime.now(),
+            ended_at=datetime.now()
         )
         self._started_at = None
 
