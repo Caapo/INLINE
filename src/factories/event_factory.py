@@ -1,17 +1,28 @@
 # ==================== INLINE/src/factories/event_factory.py ====================
+# Factory de création des événements.
+# Centralise la validation et la construction pour garantir
+# la cohérence des objets créés.
 
-# ============ Imports ============
 from datetime import datetime
 from uuid import uuid4
+
 from domain.enums.enums import EventStatus
 from domain.entities.event import Event
 
-# ============ class EventFactory ============  
-# Cette classe permet de créer des instances d'événements, en encapsulant la logique de création.
 
 class EventFactory:
+    """
+    Factory de création des événements.
+    Centralise la validation et la construction pour garantir
+    la cohérence des objets créés (id, date, statut par défaut).
+    """
 
     def create_event(self, intention_id:str, environment_id:str, start_time:datetime, duration:int) -> Event:
+        """
+        Crée un nouvel Event avec statut PLANNED par défaut.
+        Lève ValueError si duration <= 0.
+        Génère automatiquement l'UUID et la date de création.
+        """
         if duration <= 0:
             raise ValueError("La durée doit être un entier strictement positif.")
         

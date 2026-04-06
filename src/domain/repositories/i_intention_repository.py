@@ -1,15 +1,18 @@
-# ==================================== INLINE/src/domain/repositories/i_intention_repository.py ====================================
+# ================ INLINE/src/domain/repositories/i_intention_repository.py ================
+# Interface du repository des intentions.
+# (Couche domaine)
 
-# ============ Imports ============
+
 from abc import ABC, abstractmethod
 from typing import List, Optional
-from domain.entities.intention import Intention
 
-# ============ Class IIntentionRepository ============
-# Cette interface définit les méthodes que doit implémenter un stockage d'intentions
+from domain.entities.intention import Intention
 
 
 class IIntentionRepository(ABC):
+    """
+    Interface abstraite du repository des intentions.
+    """
 
     @abstractmethod
     def save(self, intention:Intention) -> None:

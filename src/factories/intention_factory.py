@@ -14,7 +14,6 @@ from domain.entities.intention import Intention
 class IntentionFactory:
     """
     Factory responsable de la création des instances d'Intention.
-    Patron de conception : Factory.
     Centralise la logique de construction afin d'éviter
     la duplication et de garantir que chaque intention
     créée possède un identifiant unique et une date de création.

@@ -15,7 +15,6 @@ from shared.observer import Observable
 class IntentionService(Observable):
     """
     Service applicatif responsable de la gestion des intentions.
-
     Orchestre les opérations métier sur les intentions :
     création, renommage, activation/désactivation, suppression.
     Notifie les composants abonnés (UI) via le patron Observer
@@ -104,7 +103,7 @@ class IntentionService(Observable):
         intention = self._get_intention_or_raise(intention_id)
         self._intention_repository.delete(intention_id)
         self.notify("intention_deleted", intention_id)
-        
+
 
     # ==================================================
     # GETTERS & AUTRES

@@ -116,6 +116,9 @@ class Intention:
     # ==================================================
 
     def __repr__(self):
+        """
+        Représentation textuelle de l'intention pour le débogage.
+        """
         return f"Intention(id={self._id}, title={self._title}, active={self._is_active})"
 
 

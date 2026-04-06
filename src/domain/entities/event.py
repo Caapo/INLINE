@@ -1,18 +1,33 @@
 # ==================== INLINE/src/domain/entities/event.py ====================
-# ============ Imports ============
+# Classe représentant un événement lié à une intention.
+# Les événements permettent de suivre l'exécution des intentions dans le temps.
+
 from datetime import datetime, timedelta
 from typing import Optional
 from typing import Any
 import json
-from domain.enums.enums import EventStatus
 
-# ============ class Event ============  
-# Cette classe permet de représenter un événement lié à une intention, en stockant des informations 
-# telles que l'heure de début, la durée, le statut (planifié, complété, annulé).
+from domain.enums.enums import EventStatus
  
 
 class Event:
+    """
+    Projection temporelle d'une intention.
+    Représente une occurrence planifiée ou réalisée d'une intention
+    dans le temps. Ne contient pas de logique métier complexe,
+    uniquement la gestion de son cycle de vie (planifié -> complété/annulé).
 
+    Attributs:
+        _id (str): Identifiant unique de l'événement.
+        _intention_id (str): Identifiant de l'intention associée.
+        _environment_id (str): Identifiant de l'environnement d'exécution.
+        _start_time (datetime): Date et heure de début planifiée.
+        _duration (int): Durée prévue en minutes.
+        _end_time (datetime): Date et heure de fin calculée.
+        _status (EventStatus): Statut actuel de l'événement (planifié, complété, annulé).
+        _created_at (datetime): Date de création de l'événement.
+        _metadata (dict): Données extensibles sans modifier la classe.
+    """
     def __init__(self, id:str, intention_id:str, environment_id:str, start_time:datetime, duration:int, status:str="planned", created_at:Optional[datetime]=None, metadata:Optional[dict[str, Any]]=None):
         self._id = id
         self._intention_id = intention_id
@@ -24,10 +39,16 @@ class Event:
         self._created_at = created_at or datetime.utcnow()
         self._metadata = metadata or {}
 
-    #-----------------------
+    # ==================================================
+    # PERSISTANCE
+    # ==================================================
 
     @classmethod
-    def from_persistence(cls, id:str, intention_id:str, environment_id:str, start_time:datetime, duration:int, end_time:datetime, status:str, created_at:datetime, metadata:Optional[dict[str, Any]]=None):
+    def from_persistence(cls, id:str, intention_id:str, environment_id:str, start_time:datetime, duration:int, end_time:datetime, status:str, created_at:datetime, 
+    metadata:Optional[dict[str, Any]]=None):
+        """
+        Reconstruit un Event depuis la base.
+        """
         event = cls.__new__(cls)
         event._id = id
         event._intention_id = intention_id
@@ -40,24 +61,33 @@ class Event:
         event._metadata = metadata or {}
         return event
 
-    # ----------------------
 
     def to_persistence(self):
+        """
+        Prépare les données de l'événement pour la persistance en base.
+        """
         return {
             "id": self._id,
             "intention_id": self._intention_id,
             "environment_id": self._environment_id,
-            "start_time": self._start_time.isoformat(),
+            "start_time": self._start_time.isoformat(), # Convertit en string ISO pour la base de données
             "duration": self._duration,
-            "end_time": self._end_time.isoformat(),
+            "end_time": self._end_time.isoformat(), # Convertit en string ISO pour la base de données
             "status": self._status.value,
-            "created_at": self._created_at.isoformat(),
+            "created_at": self._created_at.isoformat(), # Convertit en string ISO pour la base de données
             "metadata": json.dumps(self._metadata)
         }
 
-    #-----------------------
+    # ==================================================
+    # MÉTHODES MÉTIER
+    # ==================================================
 
     def update_time(self, start_time:datetime, duration:int):
+        """
+        Reprogramme l'event.
+        Lève ValueError si l'event n'est pas en statut PLANNED
+        ou si la durée est invalide.
+        """
         if self._status != EventStatus.PLANNED:
             raise ValueError("Seuls les événements planifiés peuvent être modifiés.")
         if duration <= 0:
@@ -67,31 +97,38 @@ class Event:
         self._duration = duration
         self._end_time = start_time + timedelta(minutes=duration)
 
-    # ----------------------
 
     def complete(self):
+        """
+        Marque l'event comme complété.
+        Lève ValueError si déjà annulé ou déjà complété.
+        """
         if self._status == EventStatus.CANCELLED:
             raise ValueError("Les évènements annulés ne peuvent pas être complétés")
         if self._status == EventStatus.COMPLETED:
             raise ValueError("Les évènements complétés ne peuvent pas être complétés à nouveau")
-        # if self._start_time > datetime.utcnow():
-        #     raise ValueError("Les évènements ne peuvent pas être complétés avant leur heure de début.")
-        # if self._end_time > datetime.utcnow():
-        #     raise ValueError("Les évènements ne peuvent pas être complétés avant leur heure de fin.")
 
         self._status = EventStatus.COMPLETED
 
-    # ----------------------
 
     def cancel(self):
+        """
+        Annule l'event.
+        Lève ValueError si déjà complété.
+        """
         if self._status == EventStatus.COMPLETED:
             raise ValueError("Les évènements complétés ne peuvent pas être annulés")
 
         self._status = EventStatus.CANCELLED
 
-    # ----------------------
+    # ==================================================
+    # REPRÉSENTATION
+    # ==================================================
 
     def __repr__(self):
+        """
+        Représentation textuelle de l'événement pour le débogage.
+        """
         return(
             f"Event(id={self._id}, "
             f"intention_id={self._intention_id}, "
@@ -104,7 +141,9 @@ class Event:
             f"metadata={self._metadata})"
         )
 
-    # ----------------------
+    # ==================================================
+    # PROPRIÉTÉS
+    # ==================================================
 
     @property
     def id(self):
@@ -135,9 +174,14 @@ class Event:
         return self._status.value
     
 
-    # ----------------------
+    # ==================================================
+    # AUTRES
+    # ==================================================
 
     def get_info(self):
+        """
+        Retourne un dictionnaire complet des données de l'événement.
+        """
         return {
             "id": self._id,
             "intention_id": self._intention_id,

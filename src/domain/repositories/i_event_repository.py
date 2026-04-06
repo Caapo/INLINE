@@ -1,16 +1,19 @@
 # ==================== INLINE/src/domain/repositories/i_event_repository.py ====================
+# Interface du repository des événements.
+# (Couche domaine)
 
-# ============ Imports ============
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from datetime import date, datetime
+
 from domain.entities.event import Event
 
-# ============ Class IEventRepository ============
-# Cette interface définit les méthodes que doit implémenter un stockage d'événements
 
 
 class IEventRepository(ABC):
+    """
+    Interface abstraite du repository des événements.
+    """
 
     @abstractmethod
     def save(self, event:Event) -> None:
