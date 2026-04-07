@@ -1,12 +1,41 @@
 # ======= INLINE/src/domain/entities/note.py =====
+# Entité représentant une note de l'utilisateur.
+# Une note est composée de plusieurs blocs de contenu (titre, texte, checklist, table).
+# Permet de structurer les informations de manière flexible et modulaire.
+# La note peut être attachée à une intention pour contextualiser son usage (ex: planification d'une tâche, prise de notes d'une réunion, etc.).
+
 
 from datetime import datetime
 from typing import Optional, List
 import json
-from domain.entities.i_note_block import INoteBlock
 
+from domain.entities.i_note_block import INoteBlock
+from factories.note_block_factory import NoteBlockFactory
 
 class Note:
+    """
+    Document personnalisable composé de blocs de contenu.
+    Inspiré des systèmes de type Notion, chaque note est une
+    composition libre de blocs (titre, texte, checklist, tableau).
+    Peut être liée optionnellement à une intention via intention_id.
+    Les blocs sont encapsulés et manipulés uniquement via les méthodes
+    de la note pour garantir la cohérence des données.
+
+    Attributs:
+        _id (str): Identifiant unique de la note.
+        _owner_id (str): Identifiant de l'utilisateur propriétaire.
+        _title (str): Titre de la note.
+        _blocks (List[INoteBlock]): Liste de blocs de contenu composant la note
+        _intention_id (Optional[str]): Identifiant de l'intention associée (facultatif).
+        _created_at (datetime): Date de création de la note.
+        _updated_at (datetime): Date de la dernière mise à jour de la note.
+        _metadata (dict): Données extensibles sans modifier la classe.
+    """
+
+    # =================================================
+    # CONSTRUCTEUR
+    # =================================================
+
     def __init__(self, id:str, owner_id:str, title:str, blocks: Optional[List[INoteBlock]] = None, intention_id: Optional[str] = None, created_at: Optional[datetime] = None,
     updated_at: Optional[datetime] = None, metadata: Optional[dict] = None):
         self._id = id
@@ -18,8 +47,16 @@ class Note:
         self._updated_at = updated_at or datetime.utcnow()
         self._metadata = metadata or {}
 
-    # -------------- Persistance --------------
+
+    # ==================================================
+    # PERSISTANCE
+    # ==================================================
+    
     def to_persistence(self) -> dict:
+        """
+        Prépare la note pour la persistance en base.
+        Convertit les blocs en JSON pour le stockage.
+        """
         return {
             "id": self._id,
             "owner_id": self._owner_id,
@@ -31,11 +68,14 @@ class Note:
             "metadata": json.dumps(self._metadata)
         }
 
-    #------------------------
 
     @classmethod
     def from_persistence(cls, id: str, owner_id: str, title: str, blocks_json: str, created_at: str, updated_at: str, metadata_json: str, intention_id: str = None) -> "Note":
-        from factories.note_block_factory import NoteBlockFactory
+        """
+        Reconstruit une note depuis la base.
+        Convertit les blocs depuis le JSON stocké en base.
+        """
+        # from factories.note_block_factory import NoteBlockFactory
         raw_blocks = json.loads(blocks_json) if blocks_json else []
         blocks = [NoteBlockFactory.from_dict(b) for b in raw_blocks]
 
@@ -50,26 +90,29 @@ class Note:
         note._metadata = json.loads(metadata_json) if metadata_json else {}
         return note
 
-    # --------------- Métier --------------
+
+    # ==================================================
+    # MÉTHODES MÉTIER
+    # ==================================================
+
     def rename(self, new_title: str) -> None:
         if not new_title:
             raise ValueError("Le titre ne peut pas être vide.")
         self._title = new_title
         self._touch()
 
-    #------------------------
 
     def add_block(self, block: INoteBlock) -> None:
         self._blocks.append(block)
         self._touch()
 
-    #------------------------
+    
 
     def remove_block(self, block_id: str) -> None:
         self._blocks = [b for b in self._blocks if b.get_id() != block_id]
         self._touch()
 
-    #------------------------
+    
 
     def reorder_blocks(self, from_index: int, to_index: int) -> None:
         if 0 <= from_index < len(self._blocks) and 0 <= to_index < len(self._blocks):
@@ -77,41 +120,36 @@ class Note:
             self._blocks.insert(to_index, block)
             self._touch()
 
-    #------------------------
-
-    def get_block(self, block_id: str) -> Optional[INoteBlock]:
-        for b in self._blocks:
-            if b.get_id() == block_id:
-                return b
-        return None
-
-    #------------------------
-
+   
     def update_block(self, block_id: str, data: dict) -> None:
         block = self.get_block(block_id)
         if block:
             block.update_data(data)
             self._touch()
 
-    #------------------------
+    
 
     def _touch(self) -> None:
         self._updated_at = datetime.utcnow()
 
-    #------------------------
+  
 
     def attach_to_intention(self, intention_id: str) -> None:
         self._intention_id = intention_id
         self._touch()
 
-    #------------------------
+  
 
     def detach_from_intention(self) -> None:
         self._intention_id = None
         self._touch()
 
 
-    # ---------- Propriétés ----------
+
+    # ==================================================
+    # PROPRIÉTÉS 
+    # ==================================================
+
     @property
     def id(self) -> str: return self._id
 
@@ -137,7 +175,18 @@ class Note:
     @property
     def metadata(self) -> dict: return self._metadata
 
-    #------------------------
+
+
+    # ==================================================
+    # GETTERS ET AUTRES
+    # ==================================================
+
+    def get_block(self, block_id: str) -> Optional[INoteBlock]:
+        for b in self._blocks:
+            if b.get_id() == block_id:
+                return b
+        return None
+
 
     def get_info(self) -> dict:
         return {
