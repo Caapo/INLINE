@@ -6,12 +6,26 @@ from domain.entities.environment import Environment
 from domain.repositories.i_environment_repository import IEnvironmentRepository
 
 class SQLiteEnvironmentRepository(IEnvironmentRepository):
+    """
+    Implémentation SQLite du repository des environnements.
+    Les objets interactifs sont sérialisés en JSON dans la colonne 'objects'
+    et reconstruits via InteractiveObjectFactory.from_dict() au chargement.
+    """
+
     def __init__(self, db_path: str):
         self.connection = sqlite3.connect(db_path)
         self.connection.row_factory = sqlite3.Row
         self._create_table()
 
+
+    # ===================================
+    # MÉTHODES PRINCIPALES
+    # ===================================
+
     def _create_table(self):
+        """
+        Crée la table 'environments' si elle n'existe pas déjà.
+        """
         cursor = self.connection.cursor()
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS environments (
@@ -25,8 +39,13 @@ class SQLiteEnvironmentRepository(IEnvironmentRepository):
         """)
         self.connection.commit()
 
-    # ------------------
+    
+
     def save(self, environment: Environment) -> None:
+        """
+        Sérialise et sauvegarde l'environnement avec ses objets en JSON.
+        INSERT OR REPLACE gère création et mise à jour.
+        """
         cursor = self.connection.cursor()
         environment_info = environment.to_persistence()
         cursor.execute("""
@@ -42,9 +61,18 @@ class SQLiteEnvironmentRepository(IEnvironmentRepository):
         ))
         self.connection.commit()
 
-    # ------------------
+    
+    def delete(self, env_id:str) -> None:
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM environments WHERE id = ?", (env_id,))
+        self.connection.commit()
+
 
     def _row_to_environment(self, row) -> Environment:
+        """
+        Convertit une ligne SQLite en instance d'Environment.
+        Parse le JSON des objets et les reconstruit via from_persistence().
+        """
         return Environment.from_persistence(
             id=row["id"],
             owner_id=row["owner_id"],
@@ -55,29 +83,27 @@ class SQLiteEnvironmentRepository(IEnvironmentRepository):
             
         )
 
-    # ------------------
+    # ===================================
+    # GETTERS ET AUTRES 
+    # ===================================
+
     def get_by_id(self, environment_id: str) -> Optional[Environment]:
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM environments WHERE id = ?", (environment_id,))
         row = cursor.fetchone()
         return self._row_to_environment(row) if row else None
 
-    # ------------------
+   
     def get_by_owner(self, owner_id: str) -> List[Environment]:
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM environments WHERE owner_id = ?", (owner_id,))
         rows = cursor.fetchall()
         return [self._row_to_environment(row) for row in rows]
 
-    # ------------------
+    
     def list_all(self) -> List[Environment]:
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM environments")
         rows = cursor.fetchall()
         return [self._row_to_environment(row) for row in rows]
 
-    #------------------
-    def delete(self, env_id:str) -> None:
-        cursor = self.connection.cursor()
-        cursor.execute("DELETE FROM environments WHERE id = ?", (env_id,))
-        self.connection.commit()

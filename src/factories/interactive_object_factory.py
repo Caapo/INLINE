@@ -1,8 +1,15 @@
 # ====== INLINE/src/factories/interactive_object_factory.py ========
+# Factory pour créer des objets interactifs à partir de données brutes.
+# Permet d'abstraire la logique de création et de conversion des objets interactifs.
+
 from domain.entities.clickable_object import ClickableObject
 from domain.enums.enums import ObjectCategory
 
 class InteractiveObjectFactory:
+    """
+    Factory pour créer des objets interactifs à partir de données brutes.
+    Permet d'abstraire la logique de création et de conversion des objets interactifs.
+    """
 
     @staticmethod
     def create(
@@ -15,6 +22,12 @@ class InteractiveObjectFactory:
         suggested_intentions=None,
         metadata=None
     ):
+        """
+        Crée un objet interactif selon son type.
+        Lève ValueError si le type est inconnu.
+        Actuellement supporte : 'clickable'.
+        Extensible à 'draggable', 'inspectable', etc.
+        """
         if type == "clickable":
             return ClickableObject(
                 id=id,
@@ -30,7 +43,12 @@ class InteractiveObjectFactory:
 
 
     @staticmethod
-    def from_dict(obj_dict: dict):
+    def from_dict(obj_dict:dict):
+        """
+        Reconstruit un objet interactif depuis un dictionnaire.
+        Utilisé par Environment.from_persistence() pour restaurer
+        les objets stockés en JSON dans la base.
+        """
         obj_type = obj_dict.get("type")
         data = obj_dict.get("data", {})
 

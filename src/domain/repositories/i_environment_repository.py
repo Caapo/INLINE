@@ -1,11 +1,17 @@
 # ======== INLINE/src/domain/repositories/i_environment_repository.py =========
+# Interface définissant les méthodes de base pour la gestion des environnements.
+# Permet d'abstraire la couche de persistance et de faciliter les tests.
 
-# ===== Imports =====
+
+
 from abc import ABC, abstractmethod
 from typing import List, Optional
 from domain.entities.environment import Environment
 
 class IEnvironmentRepository(ABC):
+    """
+    Interface abstraite du repository des environnements.
+    """
 
     @abstractmethod
     def save(self, env:Environment) -> None:
