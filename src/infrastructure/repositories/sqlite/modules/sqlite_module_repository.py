@@ -1,18 +1,35 @@
 # src/infrastructure/repositories/sqlite/modules/sqlite_module_repository.py
+# Implémentation SQLite du repository des modules.
+# La configuration du module est stockée en JSON dans la colonne 'config'
+# et restaurée via from_persistence() au chargement.
 
 import sqlite3
 import json
 from typing import List, Optional
+
 from domain.entities.modules.pomodoro.pomodoro_module import PomodoroModule
 from domain.repositories.modules.i_module_repository import IModuleRepository
 
 
 class SQLiteModuleRepository(IModuleRepository):
+    """
+    Implémentation SQLite du repository des modules.
+    La configuration du module est stockée en JSON dans la colonne 'config'
+    et restaurée via from_persistence() au chargement.
+    """
+
+    # ==========================
+    # CONSTRUCTEUR
+    # ==========================
 
     def __init__(self, db_path: str):
         self.connection = sqlite3.connect(db_path)
         self.connection.row_factory = sqlite3.Row
         self._create_table()
+
+    # ==========================
+    # MÉTHODES PRINCIPALES
+    # ==========================
 
     def _create_table(self):
         cursor = self.connection.cursor()
@@ -30,6 +47,7 @@ class SQLiteModuleRepository(IModuleRepository):
             )
         """)
         self.connection.commit()
+
 
     def _row_to_module(self, row) -> PomodoroModule:
         return PomodoroModule.from_persistence(
@@ -57,6 +75,16 @@ class SQLiteModuleRepository(IModuleRepository):
         ))
         self.connection.commit()
 
+    def delete(self, module_id: str) -> None:
+        cursor = self.connection.cursor()
+        cursor.execute("DELETE FROM modules WHERE id = ?", (module_id,))
+        self.connection.commit()
+
+
+    # ==========================
+    # GETTERS ET AUTRES
+    # ==========================
+
     def get_by_id(self, module_id: str) -> Optional[PomodoroModule]:
         cursor = self.connection.cursor()
         cursor.execute("SELECT * FROM modules WHERE id = ?", (module_id,))
@@ -78,7 +106,3 @@ class SQLiteModuleRepository(IModuleRepository):
         )
         return [self._row_to_module(row) for row in cursor.fetchall()]
 
-    def delete(self, module_id: str) -> None:
-        cursor = self.connection.cursor()
-        cursor.execute("DELETE FROM modules WHERE id = ?", (module_id,))
-        self.connection.commit()

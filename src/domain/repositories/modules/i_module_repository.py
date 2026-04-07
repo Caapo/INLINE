@@ -1,7 +1,11 @@
 # src/domain/repositories/modules/i_module_repository.py
+# Interface définissant les méthodes de base pour la gestion des modules.
+# Permet d'abstraire la couche de persistance et de faciliter les tests.
+
 
 from abc import ABC, abstractmethod
 from typing import List, Optional
+
 from domain.entities.modules.pomodoro.pomodoro_module import PomodoroModule
 
 

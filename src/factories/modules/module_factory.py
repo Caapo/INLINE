@@ -1,4 +1,6 @@
 # src/factories/modules/module_factory.py
+# Factory pour créer des instances de modules à partir de données brutes.
+# Permet d'abstraire la logique de création et de conversion des modules.
 
 from uuid import uuid4
 from datetime import datetime

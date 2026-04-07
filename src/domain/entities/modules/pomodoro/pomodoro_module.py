@@ -1,12 +1,44 @@
 # src/domain/entities/modules/pomodoro/pomodoro_module.py
+# Représente le module Pomodoro, mini-application de gestion du temps.
+# Contient sa propre configuration et son historique de sessions.
+
 
 from datetime import datetime
 from typing import Optional
 import json
+
 from domain.enums.enums import ModuleType
 
 
 class PomodoroModule:
+    """
+    Module autonome de gestion du temps par la technique Pomodoro.
+    Mini-application encapsulant sa propre configuration et son historique.
+
+    Paramètres configurables par l'utilisateur :
+        - Durée de travail (défaut : 25 min)
+        - Durée de pause courte (défaut : 5 min)
+        - Durée de pause longue (défaut : 15 min)
+        - Nombre de sessions avant pause longue (défaut : 4)
+
+    Attributs:
+        _id (str): Identifiant unique du module.
+        _owner_id (str): Identifiant de l'utilisateur propriétaire.
+        _name (str): Nom donné par l'utilisateur.
+        _type (ModuleType): Type du module, ici toujours POMODORO.
+        _work_minutes (int): Durée de travail en minutes.
+        _break_minutes (int): Durée de la pause courte en minutes.
+        _long_break_minutes (int): Durée de la pause longue en minutes.
+        _sessions_before_long (int): Nombre de sessions avant une pause longue.
+        _intention_id (str | None): ID de l'intention associée, si liée à une intention.
+        _created_at (datetime): Date de création du module.
+        _updated_at (datetime): Date de la dernière mise à jour du module.
+        _metadata (dict): Données extensibles pour flexibilité future.
+    """
+
+    # ==============================================
+    # CONSTRUCTEUR
+    # ==============================================
 
     def __init__(self, id:str, owner_id:str, name:str, work_minutes:int=25, break_minutes:int=5, long_break_minutes:int=15, sessions_before_long:int=4,
                 intention_id:Optional[str]=None, created_at: Optional[datetime]=None, updated_at: Optional[datetime]=None, metadata: Optional[dict]=None):
@@ -24,7 +56,10 @@ class PomodoroModule:
         self._updated_at = updated_at or datetime.utcnow()
         self._metadata = metadata or {}
 
-    # ----------------- Persistance -----------------
+    # ==============================================
+    # PERSISTANCE
+    # ==============================================
+
     def to_persistence(self) -> dict:
         config = {
             "work_minutes":         self._work_minutes,
@@ -43,6 +78,7 @@ class PomodoroModule:
             "updated_at":   self._updated_at.isoformat(),
             "metadata":     json.dumps(self._metadata)
         }
+
 
     @classmethod
     def from_persistence(cls, id:str, owner_id:str, name:str, config_json:str, intention_id:Optional[str], created_at:str, updated_at:str,
@@ -63,12 +99,18 @@ class PomodoroModule:
         m._metadata = json.loads(metadata_json) if metadata_json else {}
         return m
 
-    # --------------- Métier ---------------
+
+
+    # ==============================================
+    # MÉTHODES MÉTIER
+    # ==============================================
+
     def rename(self, new_name: str) -> None:
         if not new_name:
             raise ValueError("Le nom ne peut pas être vide.")
         self._name = new_name
         self._touch()
+
 
     def update_config(self, work_minutes: int = None, break_minutes: int = None,
                       long_break_minutes: int = None, sessions_before_long: int = None) -> None:
@@ -90,18 +132,25 @@ class PomodoroModule:
             self._sessions_before_long = sessions_before_long
         self._touch()
 
+
     def attach_to_intention(self, intention_id: str) -> None:
         self._intention_id = intention_id
         self._touch()
+
 
     def detach_from_intention(self) -> None:
         self._intention_id = None
         self._touch()
 
+
     def _touch(self) -> None:
         self._updated_at = datetime.utcnow()
 
-    # -------- Properties --------
+    
+    # ==================================================
+    # PROPRIÉTÉS
+    # ==================================================
+
     @property
     def id(self) -> str:            
         return self._id
@@ -150,6 +199,10 @@ class PomodoroModule:
     def metadata(self) -> dict:           
         return self._metadata
 
+
+    # ==================================================
+    # GETTERS ET AUTRES
+    # ==================================================
 
     def get_info(self) -> dict:
         return {

@@ -28,22 +28,26 @@ class BlockType(Enum):
     Enumération des types de blocs disponibles dans une note.
     Fermé à modification, nouveaux types via extension de l'enum.
     """
-    TITLE     = "title"
-    TEXT      = "text"
+    TITLE = "title"
+    TEXT = "text"
     CHECKLIST = "checklist"
-    TABLE     = "table"
+    TABLE = "table"
 
 
 # -------- MODULES --------
 class ModuleType(Enum):
     """
-    Enumération des types de modules d'exécution.
+    Enumération des types de modules disponibles.
+    Chaque valeur correspond à une mini-application autonome.
+    Extensible sans modifier les modules existants.
     """
     POMODORO = "pomodoro"
 
 class SessionStatus(Enum):
     """
-    Statut d'une session de pomodoro.
+    Enumération des statuts possibles d'une session Pomodoro.
+    COMPLETED - session menée à son terme.
+    INTERRUPTED - session arrêtée ou passée avant la fin.
     """
     COMPLETED  = "completed"
     INTERRUPTED = "interrupted"

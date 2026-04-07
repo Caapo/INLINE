@@ -1,4 +1,8 @@
-# src/application/services/module_service.py
+# ==== INLINE/src/application/services/module_service.py ====
+# Service applicatif pour la gestion des modules.
+# Orchestre les cas d'usage liés aux modules (création, mise à jour, suppression)
+# et notifie les abonnés via le patron Observer.
+
 
 from uuid import uuid4
 from datetime import datetime, date
@@ -15,6 +19,15 @@ from shared.observer import Observable
 
 
 class ModuleService(Observable):
+    """
+    Service applicatif de gestion des modules et de leurs sessions.
+    Orchestre toutes les opérations sur les modules Pomodoro
+    et notifie l'UI via le patron Observer.
+    """
+
+    # ==============================
+    # CONSTRUCTEUR
+    # ==============================
 
     def __init__(self, module_repository: IModuleRepository, session_repository: IPomodoroSessionRepository, module_factory: ModuleFactory, 
     intention_repository:IIntentionRepository):
@@ -24,7 +37,10 @@ class ModuleService(Observable):
         self._module_factory = module_factory
         self._intention_repo = intention_repository
 
-    # --------- Modules -----------
+    # ==============================
+    # MÉTHODES CAS D'USAGE
+    # ==============================
+
     def create_pomodoro(self, owner_id:str, name:str, work_minutes:int=25, break_minutes:int=5,
     long_break_minutes:int=15, sessions_before_long:int=4) -> PomodoroModule:
         module = self._module_factory.create_pomodoro(
@@ -38,55 +54,11 @@ class ModuleService(Observable):
         self.notify("module_created", module)
         return module
 
-    def get_module(self, module_id:str) -> Optional[PomodoroModule]:
-        return self._module_repo.get_by_id(module_id)
+    #On peut ajouter d'autres types de modules à l'avenir, ex : HabitTrackerModule, etc.
 
-    def get_modules_for_user(self, owner_id:str) -> List[PomodoroModule]:
-        return self._module_repo.get_by_owner(owner_id)
-
-    def get_modules_for_intention(self, intention_id:str) -> List[PomodoroModule]:
-        return self._module_repo.get_by_intention(intention_id)
-
-    def rename_module(self, module_id:str, new_name:str) -> PomodoroModule:
-        module = self._get_or_raise(module_id)
-        module.rename(new_name)
-        self._module_repo.save(module)
-        self.notify("module_updated", module)
-        return module
-
-    def update_config(self, module_id:str, **kwargs) -> PomodoroModule:
-        module = self._get_or_raise(module_id)
-        module.update_config(**kwargs)
-        self._module_repo.save(module)
-        self.notify("module_updated", module)
-        return module
-
-    def attach_to_intention(self, module_id:str, intention_id:str) -> PomodoroModule:
-        module    = self._get_or_raise(module_id)
-        intention = self._intention_repo.get_by_id(intention_id)
-        if not intention:
-            raise ValueError(f"Intention introuvable : {intention_id}")
-        module.attach_to_intention(intention_id)
-        self._module_repo.save(module)
-        self.notify("module_updated", module)
-        return module
-
-    def detach_from_intention(self, module_id:str) -> PomodoroModule:
-        module = self._get_or_raise(module_id)
-        module.detach_from_intention()
-        self._module_repo.save(module)
-        self.notify("module_updated", module)
-        return module
-
-    def delete_module(self, module_id:str) -> None:
-        module = self._get_or_raise(module_id)
-        self._session_repo.delete_by_module(module_id)
-        self._module_repo.delete(module_id)
-        self.notify("module_deleted", module_id)
-
-    # ----------------- Sessions Pomodoro -----------------
-    def record_session(self, module_id:str, work_duration:int, break_duration:int, status:str=SessionStatus.COMPLETED.value, started_at:Optional[datetime] = None,
-    ended_at:Optional[datetime] = None) -> PomodoroSession:
+    # Sessions Pomodoro 
+    def record_session(self, module_id:str, work_duration:int, break_duration:int, status:str=SessionStatus.COMPLETED.value, started_at:Optional[datetime]=None,
+    ended_at:Optional[datetime]=None) -> PomodoroSession:
         session = PomodoroSession(
             id=str(uuid4()),
             module_id=module_id,
@@ -99,6 +71,66 @@ class ModuleService(Observable):
         self._session_repo.save(session)
         self.notify("session_recorded", session)
         return session
+
+
+    def rename_module(self, module_id:str, new_name:str) -> PomodoroModule:
+        module = self._get_or_raise(module_id)
+        module.rename(new_name)
+        self._module_repo.save(module)
+        self.notify("module_updated", module)
+        return module
+
+
+    def update_config(self, module_id:str, **kwargs) -> PomodoroModule:
+        module = self._get_or_raise(module_id)
+        module.update_config(**kwargs)
+        self._module_repo.save(module)
+        self.notify("module_updated", module)
+        return module
+
+
+    def attach_to_intention(self, module_id:str, intention_id:str) -> PomodoroModule:
+        module    = self._get_or_raise(module_id)
+        intention = self._intention_repo.get_by_id(intention_id)
+        if not intention:
+            raise ValueError(f"Intention introuvable : {intention_id}")
+        module.attach_to_intention(intention_id)
+        self._module_repo.save(module)
+        self.notify("module_updated", module)
+        return module
+
+
+    def detach_from_intention(self, module_id:str) -> PomodoroModule:
+        module = self._get_or_raise(module_id)
+        module.detach_from_intention()
+        self._module_repo.save(module)
+        self.notify("module_updated", module)
+        return module
+
+
+    def delete_module(self, module_id:str) -> None:
+        module = self._get_or_raise(module_id)
+        self._session_repo.delete_by_module(module_id)
+        self._module_repo.delete(module_id)
+        self.notify("module_deleted", module_id)
+
+
+    # ==============================
+    # GETTERS ET AUTRES   
+    # ==============================
+
+    def get_module(self, module_id:str) -> Optional[PomodoroModule]:
+        return self._module_repo.get_by_id(module_id)
+
+    def get_modules_for_user(self, owner_id:str) -> List[PomodoroModule]:
+        return self._module_repo.get_by_owner(owner_id)
+
+    def get_modules_for_intention(self, intention_id:str) -> List[PomodoroModule]:
+        return self._module_repo.get_by_intention(intention_id)
+
+
+
+
 
     def get_sessions_for_module(self, module_id: str) -> List[PomodoroSession]:
         return self._session_repo.get_by_module(module_id)
