@@ -12,16 +12,8 @@ class InteractiveObjectFactory:
     """
 
     @staticmethod
-    def create(
-        type: str,
-        id: str,
-        environment_id: str,
-        name: str,
-        position: tuple[int,int],
-        category: ObjectCategory,
-        suggested_intentions=None,
-        metadata=None
-    ):
+    def create(type:str, id:str, environment_id:str, name:str, position:tuple[int,int], category:ObjectCategory, suggested_intentions=None,
+        metadata=None):
         """
         Crée un objet interactif selon son type.
         Lève ValueError si le type est inconnu.

@@ -1,7 +1,12 @@
 # ==================== INLINE/src/infrastructure/repositories/sqlite/sqlite_environment_repository.py ====================
+# Implémentation SQLite du repository des environnements.
+# Les objets interactifs sont sérialisés en JSON dans la colonne 'objects'
+# et reconstruits via InteractiveObjectFactory.from_dict() au chargement.
+
 import sqlite3
 import json
 from typing import List, Optional
+
 from domain.entities.environment import Environment
 from domain.repositories.i_environment_repository import IEnvironmentRepository
 

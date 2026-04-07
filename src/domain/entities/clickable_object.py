@@ -1,11 +1,18 @@
 # ======== INLINE/src/domain/entities/clickable_object.py =========
 # Un objet interactif cliquable dans un environnement.
-# Permet de représenter des éléments avec lesquels l'utilisateur peut interagir.
+# Permet de représenter des éléments avec lesquels l'utilisateur peut interagir pour déclerer des intentions.
+# D'autres types d'objets interactifs (inspectable, etc.) peuvent être ajoutés ultérieurement en implémentant IInteractiveObject.
+# Par exemple : Un objet représentant une télévision qui redirigerait vers un lien externe pour regarder les informations.
 
+#Les objets ne sont pour l'instant que des rectangles pour simplifier la visualisation.
+# Dans une version plus avancée, ils pourraient représenter de vrais objets du quotidien pour renforcer l'ancrage cognitif.
+
+
+from typing import List, Optional
 
 from domain.entities.i_interactive_object import IInteractiveObject
 from domain.enums.enums import ObjectCategory
-from typing import List, Optional
+
 
 
 class ClickableObject(IInteractiveObject):
@@ -20,8 +27,8 @@ class ClickableObject(IInteractiveObject):
         environment_id (str): Identifiant de l'environnement auquel l'objet appartient.
         name (str): Nom de l'objet.
         position (tuple[int, int]): Position de l'objet dans l'environnement (x, y).
-        category (ObjectCategory): Catégorie de l'objet (ex: meuble, appareil, ...).
-        suggested_intentions (List[str]): Liste d'intentions suggérées associées à l'objet.
+        category (ObjectCategory): Catégorie de l'objet (ex: meuble, appareil, ...). (Non utilisée dans cette version mais prévue pour une version plus avancée)
+        suggested_intentions (List[str]): Liste d'intentions suggérées associées à l'objet. (Non utilisée dans cette version mais prévue pour une version plus avancée)
         metadata (dict): Données extensibles sans modifier la classe.
     """
 

@@ -12,7 +12,7 @@ from factories.interactive_object_factory import InteractiveObjectFactory
 
 
 class Environment:
-     """
+    """
     Conteneur d'objets interactifs représentant un espace de vie.
     Correspond à un environnement physique ou mental de l'utilisateur
     (chambre, bureau, salle de sport...) modélisé en 2D.
@@ -23,11 +23,10 @@ class Environment:
         _id (str): Identifiant unique de l'environnement.
         _owner_id (str): Identifiant de l'utilisateur propriétaire.
         _name (str): Nom de l'environnement.
-        _objects (List[IInteractiveObject]): Liste d'objets interactifs présents dans l'environnement.
+        _objects (List[IInteractiveObject]): Liste d'objets interactifs présents dans l'environnement.(Non utilisée dans cette version, prévue pour une version plus avancée)
         _created_at (datetime): Date de création de l'environnement.
         _metadata (dict): Données extensibles sans modifier la classe.
     """
-
     # ==================================================
     # CONSTRUCTEUR
     # ==================================================
