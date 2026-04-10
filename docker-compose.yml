@@ -1,0 +1,14 @@
+version: "3.9"
+
+services:
+  inline-tests:
+    build: .
+    container_name: inline_tests
+    environment:
+      - QT_QPA_PLATFORM=offscreen
+      - PYTHONPATH=/app/src
+    volumes:
+      - ./src:/app/src
+      - ./tests:/app/tests
+      - ./data:/app/data
+    command: ["python", "-m", "pytest", "tests/", "-v", "--tb=short"]

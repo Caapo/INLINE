@@ -1,9 +1,6 @@
 # INLINE/src/presentation/views/main/notes/blocks/table_block_widget.py
 
-from PySide6.QtWidgets import (
-    QFrame, QVBoxLayout, QHBoxLayout, QPushButton,
-    QTableWidget, QTableWidgetItem, QHeaderView, QInputDialog
-)
+from PySide6.QtWidgets import (QFrame, QVBoxLayout, QHBoxLayout, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView, QInputDialog)
 from PySide6.QtCore import Signal
 
 

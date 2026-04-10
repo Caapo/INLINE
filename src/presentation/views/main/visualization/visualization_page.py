@@ -1,9 +1,6 @@
 # === INLINE/src/presentation/views/main/visualization/visualization_page.py ===
 
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QInputDialog, QDialog, QCalendarWidget, QMessageBox
-)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,QFrame, QInputDialog, QDialog, QCalendarWidget, QMessageBox)
 from PySide6.QtCore import Qt
 from datetime import datetime, timedelta
 

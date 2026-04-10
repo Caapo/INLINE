@@ -10,6 +10,10 @@ from domain.entities.modules.pomodoro.pomodoro_module import PomodoroModule
 
 
 class IModuleRepository(ABC):
+    """
+    Interface définissant les méthodes de base pour la gestion des modules.
+    Permet d'abstraire la couche de persistance et de faciliter les tests.
+    """
 
     @abstractmethod
     def save(self, module: PomodoroModule) -> None:

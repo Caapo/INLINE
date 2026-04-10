@@ -1,9 +1,6 @@
 # INLINE/src/presentation/views/main/notes/note_editor.py
 
-from PySide6.QtWidgets import (
-    QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,
-    QFrame, QScrollArea, QMessageBox, QInputDialog
-)
+from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushButton,QFrame, QScrollArea, QMessageBox, QInputDialog)
 from PySide6.QtCore import Qt
 
 from domain.enums.enums import BlockType
@@ -26,7 +23,7 @@ class NoteEditor(QWidget):
         self.note_service      = note_service
         self.intention_service = intention_service
         self.current_note      = None
-        self._block_widgets    = []  # list of (block_id, widget, container)
+        self._block_widgets    = []
         self._init_ui()
 
     def _init_ui(self):

@@ -1,9 +1,6 @@
 # INLINE/src/presentation/views/main/visualization/dialogs/event_dialog.py
 
-from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QLabel, QPushButton,
-    QInputDialog, QMessageBox
-)
+from PySide6.QtWidgets import (QDialog, QVBoxLayout, QLabel, QPushButton, QInputDialog, QMessageBox)
 from datetime import datetime
 
 

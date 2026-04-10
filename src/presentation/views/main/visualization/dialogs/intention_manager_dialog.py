@@ -1,9 +1,6 @@
 # INLINE/src/presentation/views/main/visualization/dialogs/intention_manager_dialog.py
 
-from PySide6.QtWidgets import (
-    QDialog, QVBoxLayout, QHBoxLayout, QLabel,
-    QPushButton, QListWidget, QListWidgetItem, QInputDialog, QMessageBox
-)
+from PySide6.QtWidgets import (QDialog, QVBoxLayout, QHBoxLayout, QLabel, QPushButton, QListWidget, QListWidgetItem, QInputDialog, QMessageBox)
 from PySide6.QtCore import Qt
 from PySide6.QtGui import QColor
 from datetime import datetime

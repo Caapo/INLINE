@@ -1,9 +1,6 @@
 # INLINE/src/presentation/views/main/notes/blocks/checklist_block_widget.py
 
-from PySide6.QtWidgets import (
-    QFrame, QVBoxLayout, QHBoxLayout,
-    QCheckBox, QPushButton, QInputDialog
-)
+from PySide6.QtWidgets import (QFrame, QVBoxLayout, QHBoxLayout, QCheckBox, QPushButton, QInputDialog)
 from PySide6.QtCore import Signal
 
 
