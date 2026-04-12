@@ -8,10 +8,10 @@ from domain.entities.intention import Intention
 from domain.entities.event import Event
 from domain.entities.note import Note
 from domain.entities.note_blocks import (TextBlock, TitleBlock, ChecklistBlock, TableBlock)
-from domain.entities.pomodoro_module import PomodoroModule
-from domain.entities.pomodoro_session import PomodoroSession
+from domain.entities.modules.pomodoro.pomodoro_module import PomodoroModule
+from domain.entities.modules.pomodoro.pomodoro_session import PomodoroSession
 from domain.enums.enums import EventStatus
-from domain.enums.module_enums import SessionStatus
+from domain.enums.enums import SessionStatus
 
 
 # ======================================================
