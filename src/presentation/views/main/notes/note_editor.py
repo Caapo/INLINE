@@ -37,9 +37,9 @@ class NoteEditor(QWidget):
         self.btn_rename = QPushButton("✎")
         self.btn_rename.setFixedSize(28, 28)
         self.btn_rename.setToolTip("Renommer la note")
-        self.btn_rename.setStyleSheet(
-            "background: #2a2a3e; color: white; border-radius: 4px;"
-        )
+        # self.btn_rename.setStyleSheet(
+        #     "background: #2a2a3e; color: white; border-radius: 4px;"
+        # )
         self.btn_rename.clicked.connect(self._rename_note)
         header.addWidget(self.lbl_title)
         header.addStretch()
@@ -85,11 +85,11 @@ class NoteEditor(QWidget):
             ("Tableau",   BlockType.TABLE.value),
         ]:
             btn = QPushButton(f"+ {label}")
-            btn.setStyleSheet("""
-                QPushButton { background: #2a2a3e; color: #ccc;
-                              border: 1px solid #444; border-radius: 4px; padding: 4px 10px; }
-                QPushButton:hover { background: #3a3a5c; }
-            """)
+            # btn.setStyleSheet("""
+            #     QPushButton { background: #2a2a3e; color: #ccc;
+            #                   border: 1px solid #444; border-radius: 4px; padding: 4px 10px; }
+            #     QPushButton:hover { background: #3a3a5c; }
+            # """)
             btn.clicked.connect(lambda _, t=btype: self._add_block(t))
             add_bar.addWidget(btn)
 
@@ -153,9 +153,9 @@ class NoteEditor(QWidget):
         ses boutons de contrôle (ordre, suppression).
         """
         container = QFrame()
-        container.setStyleSheet("""
-            QFrame { background: #2a2a3e; border-radius: 6px; border: 1px solid #3a3a5c; }
-        """)
+        # container.setStyleSheet("""
+            # QFrame { background: #2a2a3e; border-radius: 6px; border: 1px solid #3a3a5c; }
+        # """)
         c_layout = QVBoxLayout(container)
         c_layout.setContentsMargins(8, 8, 8, 8)
         c_layout.setSpacing(4)
@@ -163,10 +163,10 @@ class NoteEditor(QWidget):
         # Header du bloc
         h = QHBoxLayout()
         type_icons = {
-            BlockType.TITLE.value:     "📝 Titre",
-            BlockType.TEXT.value:      "✏️ Texte",
-            BlockType.CHECKLIST.value: "☑️ Checklist",
-            BlockType.TABLE.value:     "📊 Tableau",
+            BlockType.TITLE.value:     "Titre",
+            BlockType.TEXT.value:      "Texte",
+            BlockType.CHECKLIST.value: "Checklist",
+            BlockType.TABLE.value:     "Tableau",
         }
         lbl_type = QLabel(type_icons.get(block_type, block_type))
 
@@ -175,9 +175,9 @@ class NoteEditor(QWidget):
         btn_del = QPushButton("✕")
         for b in [btn_up, btn_dn, btn_del]:
             b.setFixedSize(22, 22)
-        btn_del.setStyleSheet(
-            "background: #1e1e2e; color: #cc4444; border-radius: 3px; font-size: 10px;"
-        )
+        # btn_del.setStyleSheet(
+        #     "background: #1e1e2e; color: #cc4444; border-radius: 3px; font-size: 10px;"
+        # )
 
         h.addWidget(lbl_type)
         h.addStretch()
